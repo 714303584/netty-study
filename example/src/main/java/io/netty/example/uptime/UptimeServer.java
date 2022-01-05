@@ -18,10 +18,14 @@ package io.netty.example.uptime;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoop;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.json.JsonObjectDecoder;
+import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
@@ -30,7 +34,7 @@ import io.netty.handler.logging.LoggingHandler;
  * So it simply discards all message received.
  */
 public final class UptimeServer {
-    private static final int PORT = Integer.parseInt(System.getProperty("port", "8080"));
+    private static final int PORT = Integer.parseInt(System.getProperty("port", "8888"));
     private static final UptimeServerHandler handler = new UptimeServerHandler();
 
     private UptimeServer() {
@@ -48,6 +52,8 @@ public final class UptimeServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel ch) {
+                            ch.pipeline().addLast(new MyDecoder());
+//                            ch.pipeline().addLast(new StringDecoder());
                             ch.pipeline().addLast(handler);
                         }
                     });

@@ -15,15 +15,21 @@
  */
 package io.netty.example.uptime;
 
+import com.alibaba.fastjson.JSON;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
+
+import java.nio.Buffer;
+import java.util.zip.Deflater;
 
 
 /**
@@ -34,7 +40,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 public final class UptimeClient {
 
     static final String HOST = System.getProperty("host", "127.0.0.1");
-    static final int PORT = Integer.parseInt(System.getProperty("port", "8080"));
+    static final int PORT = Integer.parseInt(System.getProperty("port", "8888"));
     // Sleep 5 seconds before a reconnection attempt.
     static final int RECONNECT_DELAY = Integer.parseInt(System.getProperty("reconnectDelay", "5"));
     // Reconnect when the server sends nothing for 10 seconds.
@@ -51,10 +57,44 @@ public final class UptimeClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new IdleStateHandler(READ_TIMEOUT, 0, 0), handler);
+                        ch.pipeline().addLast(new StringEncoder());
+                       // ch.pipeline().addLast(new IdleStateHandler(READ_TIMEOUT, 0, 0), handler);
+
                     }
                 });
-        bs.connect();
+        ChannelFuture channelFuture = bs.connect();
+        int i = 0;
+        Thread.sleep(1000);
+        while (true){
+
+
+            User user = new User();
+            user.setUserId(i+"");
+            user.setUserName("小猪猪"+i);
+            user.setDesc("d11111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
+                    "111111111111111111111111aaaaa" +
+                    "11111111aaaaaaaaaaaaaaaaaaa"+i);
+            String userString = JSON.toJSONString(user);
+
+
+            byte[] bytes = userString.getBytes("UTF-8");
+            System.out.println("压缩前："+bytes.length);
+           byte[] sendBytes = Com.compress(bytes);
+            System.out.println("压缩后："+sendBytes.length);
+
+//
+            ByteBuf byteBuf = Unpooled.buffer();
+
+            channelFuture.channel().writeAndFlush(
+                    byteBuf
+                    .writeInt(sendBytes.length)
+                    .writeBytes(sendBytes)
+            );
+            //Thread.sleep(110);
+            i++;
+        }
+//        channelFuture.channel().flush();
+
     }
 
     static void connect() {

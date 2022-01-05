@@ -15,14 +15,27 @@
  */
 package io.netty.example.uptime;
 
+import com.alibaba.fastjson.JSON;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.ReferenceCountUtil;
 
 @Sharable
 public class UptimeServerHandler extends SimpleChannelInboundHandler<Object> {
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+
+        ByteBuf byteBuf = (ByteBuf) msg;
+        byte[] bytes = new byte[byteBuf.readableBytes()];
+        byteBuf.readBytes(bytes);
+        byte[] unCompress = Com.uncompress(bytes);
+        String stringMsg = new String(unCompress, "UTF-8");
+        System.out.println("message:" + msg);
+        User user = JSON.toJavaObject(JSON.parseObject(stringMsg), User.class);
+        System.out.print(user.toString()+"\n");
+//        ReferenceCountUtil.release(msg);
         // discard
     }
 
