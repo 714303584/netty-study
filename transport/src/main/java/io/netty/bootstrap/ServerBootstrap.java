@@ -204,6 +204,8 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         @Override
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
+
+            logger.info("ServerBootstrap 调用通道读取 channelRead");
             final Channel child = (Channel) msg;
 
             child.pipeline().addLast(childHandler);

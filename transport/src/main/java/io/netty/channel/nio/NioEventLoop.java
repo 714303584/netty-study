@@ -321,6 +321,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
 
     private void register0(SelectableChannel ch, int interestOps, NioTask<?> task) {
         try {
+            logger.info(Thread.currentThread().getName()+" 将channel注册到selector");
             ch.register(unwrappedSelector, interestOps, task);
         } catch (Exception e) {
             throw new EventLoopException("failed to register a channel", e);
@@ -433,6 +434,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
 
     @Override
     protected void run() {
+        logger.info("EventLoop 启动"+this.parent());
         int selectCnt = 0;
         for (;;) {
             try {
@@ -603,6 +605,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     }
 
     private void processSelectedKeysPlain(Set<SelectionKey> selectedKeys) {
+        logger.info("NioEventLoop -- processSelectedKeysPlain ");
         // check if the set is empty and if so just return to not create garbage by
         // creating a new Iterator every time even if there is nothing to process.
         // See https://github.com/netty/netty/issues/597
@@ -643,6 +646,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     }
 
     private void processSelectedKeysOptimized() {
+        logger.info("NioEventLoop -- processSelectedKeysOptimized");
         for (int i = 0; i < selectedKeys.size; ++i) {
             final SelectionKey k = selectedKeys.keys[i];
             // null out entry in the array to allow to have it GC'ed once the Channel close
@@ -716,6 +720,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
             // Also check for readOps of 0 to workaround possible JDK bug which may otherwise lead
             // to a spin loop
             if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
+                logger.info("["+Thread.currentThread().getName()+"]线程unsafe进进行消息读取");
                 unsafe.read();
             }
         } catch (CancelledKeyException ignored) {

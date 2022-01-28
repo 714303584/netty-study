@@ -130,6 +130,7 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
     @SuppressJava6Requirement(reason = "Usage guarded by java version check")
     @Override
     protected void doBind(SocketAddress localAddress) throws Exception {
+        logger.info("NioServerSocketChannel执行dobind方法进行localAdreess的绑定");
         if (PlatformDependent.javaVersion() >= 7) {
             javaChannel().bind(localAddress, config.getBacklog());
         } else {
@@ -144,11 +145,10 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
 
     @Override
     protected int doReadMessages(List<Object> buf) throws Exception {
+        logger.info(Thread.currentThread().getName()+" -- 使用doReadMessages方法进行消息读取");
         SocketChannel ch = SocketUtils.accept(javaChannel());
-
         try {
-            if (ch != null) {
-                buf.add(new NioSocketChannel(this, ch));
+            if (ch != null) {   buf.add(new NioSocketChannel(this, ch));
                 return 1;
             }
         } catch (Throwable t) {

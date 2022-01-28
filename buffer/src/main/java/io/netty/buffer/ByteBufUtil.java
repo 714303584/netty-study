@@ -78,6 +78,8 @@ public final class ByteBufUtil {
                 "io.netty.allocator.type", PlatformDependent.isAndroid() ? "unpooled" : "pooled");
         allocType = allocType.toLowerCase(Locale.US).trim();
 
+
+        logger.info("初始化--allocType:"+allocType);
         ByteBufAllocator alloc;
         if ("unpooled".equals(allocType)) {
             alloc = UnpooledByteBufAllocator.DEFAULT;
@@ -90,6 +92,7 @@ public final class ByteBufUtil {
             logger.debug("-Dio.netty.allocator.type: pooled (unknown: {})", allocType);
         }
 
+        logger.info("初始化--ByteBufAllocator:"+alloc.getClass().getName());
         DEFAULT_ALLOCATOR = alloc;
 
         THREAD_LOCAL_BUFFER_SIZE = SystemPropertyUtil.getInt("io.netty.threadLocalDirectBufferSize", 0);

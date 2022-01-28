@@ -463,6 +463,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
         @Override
         public final void register(EventLoop eventLoop, final ChannelPromise promise) {
+            logger.info("register方法 将EventLoop和channel绑定 ");
             ObjectUtil.checkNotNull(eventLoop, "eventLoop");
             if (isRegistered()) {
                 promise.setFailure(new IllegalStateException("registered to an event loop already"));
@@ -498,6 +499,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
         }
 
         private void register0(ChannelPromise promise) {
+            logger.info("实际执行register0方法");
             try {
                 // check if the channel is still open as it could be closed in the mean time when the register
                 // call was outside of the eventLoop

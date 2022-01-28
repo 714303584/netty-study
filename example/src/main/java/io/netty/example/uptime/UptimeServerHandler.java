@@ -28,7 +28,9 @@ public class UptimeServerHandler extends SimpleChannelInboundHandler<Object> {
     public void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
 
         ByteBuf byteBuf = (ByteBuf) msg;
+
         byte[] bytes = new byte[byteBuf.readableBytes()];
+
         byteBuf.readBytes(bytes);
         byte[] unCompress = Com.uncompress(bytes);
         String stringMsg = new String(unCompress, "UTF-8");

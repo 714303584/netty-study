@@ -394,12 +394,14 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     static void invokeChannelReadComplete(final AbstractChannelHandlerContext next) {
         EventExecutor executor = next.executor();
         if (executor.inEventLoop()) {
+            logger.info("在eventloop中[executor.inEventLoop()] 调用invokeChannelReadComplete()");
             next.invokeChannelReadComplete();
         } else {
             Tasks tasks = next.invokeTasks;
             if (tasks == null) {
                 next.invokeTasks = tasks = new Tasks(next);
             }
+            logger.info("invokeChannelReadComplete提交task");
             executor.execute(tasks.invokeChannelReadCompleteTask);
         }
     }

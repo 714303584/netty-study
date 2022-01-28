@@ -186,16 +186,27 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class LengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
 
+    //
     private final ByteOrder byteOrder;
+    //最大帧长度
     private final int maxFrameLength;
+    //偏移量
     private final int lengthFieldOffset;
+    //
     private final int lengthFieldLength;
+
     private final int lengthFieldEndOffset;
+
     private final int lengthAdjustment;
+
     private final int initialBytesToStrip;
+
     private final boolean failFast;
+
     private boolean discardingTooLongFrame;
+
     private long tooLongFrameLength;
+
     private long bytesToDiscard;
 
     /**

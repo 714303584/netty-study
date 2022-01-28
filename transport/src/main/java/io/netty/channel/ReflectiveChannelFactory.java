@@ -29,6 +29,7 @@ public class ReflectiveChannelFactory<T extends Channel> implements ChannelFacto
     private final Constructor<? extends T> constructor;
 
     public ReflectiveChannelFactory(Class<? extends T> clazz) {
+        System.out.print("ReflectiveChannelFactory(反射通道工厂)");
         ObjectUtil.checkNotNull(clazz, "clazz");
         try {
             this.constructor = clazz.getConstructor();
@@ -41,6 +42,7 @@ public class ReflectiveChannelFactory<T extends Channel> implements ChannelFacto
     @Override
     public T newChannel() {
         try {
+            System.out.print("ReflectiveChannelFactory(反射通道工厂)-- 通过constructor.newInstance()--创建通道");
             return constructor.newInstance();
         } catch (Throwable t) {
             throw new ChannelException("Unable to create Channel from class " + constructor.getDeclaringClass(), t);

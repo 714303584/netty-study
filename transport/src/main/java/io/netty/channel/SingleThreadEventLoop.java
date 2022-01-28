@@ -21,6 +21,8 @@ import io.netty.util.concurrent.SingleThreadEventExecutor;
 import io.netty.util.internal.ObjectUtil;
 import io.netty.util.internal.SystemPropertyUtil;
 import io.netty.util.internal.UnstableApi;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 
 import java.util.Queue;
 import java.util.concurrent.Executor;
@@ -32,6 +34,9 @@ import java.util.concurrent.ThreadFactory;
  */
 public abstract class SingleThreadEventLoop extends SingleThreadEventExecutor implements EventLoop {
 
+
+    private static final InternalLogger logger =
+            InternalLoggerFactory.getInstance(SingleThreadEventLoop.class);
     protected static final int DEFAULT_MAX_PENDING_TASKS = Math.max(16,
             SystemPropertyUtil.getInt("io.netty.eventLoop.maxPendingTasks", Integer.MAX_VALUE));
 
@@ -78,12 +83,14 @@ public abstract class SingleThreadEventLoop extends SingleThreadEventExecutor im
 
     @Override
     public ChannelFuture register(Channel channel) {
+        logger.info("SingleThreadEventLoop 通道注册 channel");
         return register(new DefaultChannelPromise(channel, this));
     }
 
     @Override
     public ChannelFuture register(final ChannelPromise promise) {
         ObjectUtil.checkNotNull(promise, "promise");
+        logger.info("NioEventLoop 注册 channel");
         promise.channel().unsafe().register(this, promise);
         return promise;
     }

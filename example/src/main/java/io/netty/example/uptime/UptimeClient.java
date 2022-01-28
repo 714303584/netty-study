@@ -58,37 +58,40 @@ public final class UptimeClient {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new StringEncoder());
-                       // ch.pipeline().addLast(new IdleStateHandler(READ_TIMEOUT, 0, 0), handler);
+                        // ch.pipeline().addLast(new IdleStateHandler(READ_TIMEOUT, 0, 0), handler);
 
                     }
                 });
         ChannelFuture channelFuture = bs.connect();
         int i = 0;
         Thread.sleep(1000);
-        while (true){
+
+        while (true) {
 
 
             User user = new User();
-            user.setUserId(i+"");
-            user.setUserName("小猪猪"+i);
+            user.setUserId(i + "");
+            user.setUserName("小猪猪" + i);
             user.setDesc("d11111111111111111111111111111111111111111111111111111111111111111111111111111111111111" +
                     "111111111111111111111111aaaaa" +
-                    "11111111aaaaaaaaaaaaaaaaaaa"+i);
+                    "11111111aaaaaaaaaaaaaaaaaaa" + i);
             String userString = JSON.toJSONString(user);
 
 
             byte[] bytes = userString.getBytes("UTF-8");
-            System.out.println("压缩前："+bytes.length);
-           byte[] sendBytes = Com.compress(bytes);
-            System.out.println("压缩后："+sendBytes.length);
+            System.out.println("压缩前：" + bytes.length);
 
+            byte[] comBytes = Com.compress(bytes);
+            System.out.println("加密前：" + comBytes.length);
+
+            System.out.println("加密后：" + comBytes.length);
 //
             ByteBuf byteBuf = Unpooled.buffer();
 
             channelFuture.channel().writeAndFlush(
                     byteBuf
-                    .writeInt(sendBytes.length)
-                    .writeBytes(sendBytes)
+                            .writeInt(comBytes.length)
+                            .writeBytes(comBytes)
             );
             //Thread.sleep(110);
             i++;

@@ -922,6 +922,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
     @Override
     public final ChannelPipeline fireChannelReadComplete() {
+        logger.info(head.getClass().getName()+"使用channelPipeline.fireChannelReadComplete进行消息处理");
         AbstractChannelHandlerContext.invokeChannelReadComplete(head);
         return this;
     }
