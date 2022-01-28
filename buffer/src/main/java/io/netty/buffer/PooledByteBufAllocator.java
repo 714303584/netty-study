@@ -327,6 +327,8 @@ public class PooledByteBufAllocator extends AbstractByteBufAllocator implements 
             directArenaMetrics = Collections.emptyList();
         }
         metric = new PooledByteBufAllocatorMetric(this);
+
+        logger.info("PooledByteBufAllocator--构造函数--参数：preferDirect="+preferDirect+",nHeapArena="+nHeapArena+",nDirectArena="+nDirectArena);
     }
 
     @SuppressWarnings("unchecked")
