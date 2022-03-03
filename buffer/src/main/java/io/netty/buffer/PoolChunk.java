@@ -22,12 +22,18 @@ import java.util.PriorityQueue;
 
 /**
  * Description of algorithm for PageRun/PoolSubpage allocation from PoolChunk
+ * 从 PoolChunk 分配 PageRun/PoolSubpage 的算法描述
  *
  * Notation: The following terms are important to understand the code
+ * 注意：以下术语对于理解代码很重要
  * > page  - a page is the smallest unit of memory chunk that can be allocated
+ * > 页 - 页是可以分配的最小内存块单位
  * > run   - a run is a collection of pages
+ * > run - 页的集合叫run
  * > chunk - a chunk is a collection of runs
+ * > chunk - 块是run的集合
  * > in this code chunkSize = maxPages * pageSize
+ * >块大小 = 页数量*页大小
  *
  * To begin we allocate a byte array of size = chunkSize
  * Whenever a ByteBuf of given size needs to be created we search for the first position
@@ -127,6 +133,9 @@ import java.util.PriorityQueue;
  * 2) if the subpage is not used or it is a run, then start free this run
  * 3) merge continuous avail runs
  * 4) save the merged run
+ *
+ *
+ * zhuss
  *
  */
 final class PoolChunk<T> implements PoolChunkMetric {

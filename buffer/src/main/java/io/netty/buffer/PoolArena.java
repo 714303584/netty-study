@@ -19,6 +19,8 @@ package io.netty.buffer;
 import io.netty.util.internal.LongCounter;
 import io.netty.util.internal.PlatformDependent;
 import io.netty.util.internal.StringUtil;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -39,6 +41,9 @@ import static java.lang.Math.max;
 abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
     static final boolean HAS_UNSAFE = PlatformDependent.hasUnsafe();
 
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(PoolArena.class);
+
+
     /**
      * 内存分片的大小 todo ？？
      */
@@ -54,7 +59,7 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
     final int directMemoryCacheAlignment;
     private final PoolSubpage<T>[] smallSubpagePools;
 
-    //内存块列表
+    //内存块列表 根据使用率来进行分租
     private final PoolChunkList<T> q050;
     private final PoolChunkList<T> q025;
     private final PoolChunkList<T> q000;
@@ -119,9 +124,7 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         metrics.add(q100);
 
         chunkListMetrics = Collections.unmodifiableList(metrics);
-
-        System.out.println("poolArena init!");
-
+        logger.info(" poolArena 初始化!");
     }
 
     private PoolSubpage<T> newSubpagePoolHead() {
@@ -606,6 +609,7 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
 
         @Override
         protected PooledByteBuf<byte[]> newByteBuf(int maxCapacity) {
+            logger.info("HeapArena.newByteBuf(int maxCapacity) 获取一个新的PooledByteBuf");
             return HAS_UNSAFE ? PooledUnsafeHeapByteBuf.newUnsafeInstance(maxCapacity)
                     : PooledHeapByteBuf.newInstance(maxCapacity);
         }

@@ -17,6 +17,8 @@
 package io.netty.buffer;
 
 import io.netty.util.internal.StringUtil;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +30,9 @@ import static java.lang.Math.*;
 import java.nio.ByteBuffer;
 
 final class PoolChunkList<T> implements PoolChunkListMetric {
+
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(PoolChunkList.class);
+
     private static final Iterator<PoolChunkMetric> EMPTY_METRICS = Collections.<PoolChunkMetric>emptyList().iterator();
     private final PoolArena<T> arena;
     private final PoolChunkList<T> nextList;
@@ -69,17 +74,22 @@ final class PoolChunkList<T> implements PoolChunkListMetric {
         //
         freeMinThreshold = (maxUsage == 100) ? 0 : (int) (chunkSize * (100.0 - maxUsage + 0.99999999) / 100L);
         freeMaxThreshold = (minUsage == 100) ? 0 : (int) (chunkSize * (100.0 - minUsage + 0.99999999) / 100L);
+
+        logger.info("PoolChunkList 构造函数执行完成");
     }
 
     /**
      * Calculates the maximum capacity of a buffer that will ever be possible to allocate out of the {@link PoolChunk}s
      * that belong to the {@link PoolChunkList} with the given {@code minUsage} and {@code maxUsage} settings.
+     *计算buffer的最大容量
+     *
      */
     private static int calculateMaxCapacity(int minUsage, int chunkSize) {
         minUsage = minUsage0(minUsage);
 
         if (minUsage == 100) {
             // If the minUsage is 100 we can not allocate anything out of this list.
+            // 如果minUsage是100 不做任何事情
             return 0;
         }
 
@@ -88,6 +98,8 @@ final class PoolChunkList<T> implements PoolChunkListMetric {
         // As an example:
         // - If a PoolChunkList has minUsage == 25 we are allowed to allocate at most 75% of the chunkSize because
         //   this is the maximum amount available in any PoolChunk in this PoolChunkList.
+
+        logger.info("PoolChunkList.calculateMaxCapacity(int minUsage, int chunkSize) 计算buffer的最大容量");
         return  (int) (chunkSize * (100L - minUsage) / 100L);
     }
 
