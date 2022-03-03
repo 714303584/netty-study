@@ -29,20 +29,32 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static io.netty.buffer.PoolChunk.isSubpage;
 import static java.lang.Math.max;
 
+/**
+ * 继承自SizeClasses
+ * 实现PoolArenaMetric
+ *
+ *
+ * @param <T>
+ */
 abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
     static final boolean HAS_UNSAFE = PlatformDependent.hasUnsafe();
 
+    /**
+     * 内存分片的大小 todo ？？
+     */
     enum SizeClass {
         Small,
         Normal
     }
 
+    //内存池申请器
     final PooledByteBufAllocator parent;
 
     final int numSmallSubpagePools;
     final int directMemoryCacheAlignment;
     private final PoolSubpage<T>[] smallSubpagePools;
 
+    //内存块列表
     private final PoolChunkList<T> q050;
     private final PoolChunkList<T> q025;
     private final PoolChunkList<T> q000;
@@ -83,6 +95,7 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
             smallSubpagePools[i] = newSubpagePoolHead();
         }
 
+        //初始化数据分片
         q100 = new PoolChunkList<T>(this, null, 100, Integer.MAX_VALUE, chunkSize);
         q075 = new PoolChunkList<T>(this, q100, 75, 100, chunkSize);
         q050 = new PoolChunkList<T>(this, q075, 50, 100, chunkSize);
@@ -104,7 +117,11 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         metrics.add(q050);
         metrics.add(q075);
         metrics.add(q100);
+
         chunkListMetrics = Collections.unmodifiableList(metrics);
+
+        System.out.println("poolArena init!");
+
     }
 
     private PoolSubpage<T> newSubpagePoolHead() {
