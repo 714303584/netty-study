@@ -593,12 +593,14 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
 
         @Override
         protected PoolChunk<byte[]> newChunk(int pageSize, int maxPageIdx, int pageShifts, int chunkSize) {
+           logger.info("HeapArena.newChunk 获取PoolChunk");
             return new PoolChunk<byte[]>(
                     this, null, newByteArray(chunkSize), pageSize, pageShifts, chunkSize, maxPageIdx);
         }
 
         @Override
         protected PoolChunk<byte[]> newUnpooledChunk(int capacity) {
+
             return new PoolChunk<byte[]>(this, null, newByteArray(capacity), capacity);
         }
 
@@ -624,12 +626,18 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         }
     }
 
+    /**
+     * 直接内存空间池
+     *  非堆内存 -- 分为平台依赖申请和ByteBuffer两种方式
+     *
+     */
     static final class DirectArena extends PoolArena<ByteBuffer> {
 
         DirectArena(PooledByteBufAllocator parent, int pageSize, int pageShifts,
                     int chunkSize, int directMemoryCacheAlignment) {
             super(parent, pageSize, pageShifts, chunkSize,
                   directMemoryCacheAlignment);
+            logger.info("DirectArena.DirectArena 直接内存池");
         }
 
         @Override
@@ -640,6 +648,7 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         @Override
         protected PoolChunk<ByteBuffer> newChunk(int pageSize, int maxPageIdx,
             int pageShifts, int chunkSize) {
+            logger.info("DirectArena.newChunk 申请内存空间");
             if (directMemoryCacheAlignment == 0) {
                 ByteBuffer memory = allocateDirect(chunkSize);
                 return new PoolChunk<ByteBuffer>(this, memory, memory, pageSize, pageShifts,
@@ -664,13 +673,16 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
             return new PoolChunk<ByteBuffer>(this, base, memory, capacity);
         }
 
+
         private static ByteBuffer allocateDirect(int capacity) {
+            logger.info("DirectArena.allocateDirect 申请内存空间(ByteBuffer)");
             return PlatformDependent.useDirectBufferNoCleaner() ?
                     PlatformDependent.allocateDirectNoCleaner(capacity) : ByteBuffer.allocateDirect(capacity);
         }
 
         @Override
         protected void destroyChunk(PoolChunk<ByteBuffer> chunk) {
+            logger.info("DirectArena.destroyChunk 销毁内存空间(PoolChunk<ByteBuffer>)");
             if (PlatformDependent.useDirectBufferNoCleaner()) {
                 PlatformDependent.freeDirectNoCleaner((ByteBuffer) chunk.base);
             } else {

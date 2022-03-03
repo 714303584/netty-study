@@ -156,6 +156,7 @@ final class PoolChunk<T> implements PoolChunkMetric {
 
     /**
      * store the first page and last page of each avail run
+     * 存储每个播出信息的第一页和最后一页
      */
     private final LongLongHashMap runsAvailMap;
 
@@ -166,6 +167,7 @@ final class PoolChunk<T> implements PoolChunkMetric {
 
     /**
      * manage all subpages in this chunk
+     * 管理这个块中的所有subpages
      */
     private final PoolSubpage<T>[] subpages;
 
