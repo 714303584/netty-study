@@ -196,7 +196,7 @@ public class PooledByteBufAllocator extends AbstractByteBufAllocator implements 
     @SuppressWarnings("deprecation")
     public PooledByteBufAllocator(boolean preferDirect) {
         this(preferDirect, DEFAULT_NUM_HEAP_ARENA, DEFAULT_NUM_DIRECT_ARENA, DEFAULT_PAGE_SIZE, DEFAULT_MAX_ORDER);
-        logger.info("PooledByteBufAllocator 构造函数调用");
+        logger.info("PooledByteBufAllocator 构造函数调用，preferDirect:"+preferDirect);
     }
 
     @SuppressWarnings("deprecation")

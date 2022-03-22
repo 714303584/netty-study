@@ -16,6 +16,9 @@
 
 package io.netty.buffer;
 
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
+
 import static io.netty.buffer.PoolChunk.RUN_OFFSET_SHIFT;
 import static io.netty.buffer.PoolChunk.SIZE_SHIFT;
 import static io.netty.buffer.PoolChunk.IS_USED_SHIFT;
@@ -24,6 +27,7 @@ import static io.netty.buffer.SizeClasses.LOG2_QUANTUM;
 
 final class PoolSubpage<T> implements PoolSubpageMetric {
 
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(PoolSubpage.class);
     final PoolChunk<T> chunk;
     private final int pageShifts;
     private final int runOffset;
@@ -79,6 +83,7 @@ final class PoolSubpage<T> implements PoolSubpageMetric {
 
     /**
      * Returns the bitmap index of the subpage allocation.
+     * 返回子页面的位图索引
      */
     long allocate() {
         if (numAvail == 0 || !doNotDestroy) {
@@ -94,8 +99,9 @@ final class PoolSubpage<T> implements PoolSubpageMetric {
         if (-- numAvail == 0) {
             removeFromPool();
         }
-
-        return toHandle(bitmapIdx);
+         long tohandleLong = toHandle(bitmapIdx);
+        logger.info("PoolSubpage allocate():"+tohandleLong);
+        return tohandleLong;
     }
 
     /**
@@ -103,6 +109,8 @@ final class PoolSubpage<T> implements PoolSubpageMetric {
      *         {@code false} if this subpage is not used by its chunk and thus it's OK to be released.
      */
     boolean free(PoolSubpage<T> head, int bitmapIdx) {
+
+        logger.info("PoolSubpage free():"+bitmapIdx);
         if (elemSize == 0) {
             return true;
         }

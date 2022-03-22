@@ -77,6 +77,10 @@ import static io.netty.buffer.PoolThreadCache.*;
  *   ( 75,    23,       21,        4,       yes,            no,        no)
  * <p>
  *   ( 76,    24,       22,        1,       yes,            no,        no)
+ *
+ *   用户获取申请内存块的大小
+ *   通过sizeClasses来获取内存大小，确定分配的内存的大小
+ *
  */
 abstract class SizeClasses implements SizeClassesMetric {
 
@@ -135,7 +139,7 @@ abstract class SizeClasses implements SizeClassesMetric {
     private final int[] pageIdx2sizeTab;
 
     // lookup table for sizeIdx <= smallMaxSizeIdx
-    private final int[] sizeIdx2sizeTab;
+    private fin
 
     // lookup table used for size <= lookupMaxclass
     // spacing is 1 << LOG2_QUANTUM, so the size of array is lookupMaxclass >> LOG2_QUANTUM
@@ -300,11 +304,19 @@ abstract class SizeClasses implements SizeClassesMetric {
         return groupSize + modSize;
     }
 
+    /**
+     * 获取空间大小
+     * @param size request size
+     *
+     * @return
+     */
     @Override
     public int size2SizeIdx(int size) {
         if (size == 0) {
             return 0;
         }
+
+        //大小大于chunkSize
         if (size > chunkSize) {
             return nSizes;
         }

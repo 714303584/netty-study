@@ -108,9 +108,13 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         q000 = new PoolChunkList<T>(this, q025, 1, 50, chunkSize);
         qInit = new PoolChunkList<T>(this, q000, Integer.MIN_VALUE, 25, chunkSize);
 
+        //进行链表关联 使用100的上一个是75%
         q100.prevList(q075);
+        //进行链表关联 使用75的上一个是50%
         q075.prevList(q050);
+        //进行链表关联 使用50的上一个是25%
         q050.prevList(q025);
+        //进行链表关联 使用25的上一个是50%
         q025.prevList(q000);
         q000.prevList(null);
         qInit.prevList(qInit);
@@ -147,14 +151,26 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         return buf;
     }
 
+    /**
+     * 从内存空间池中进行分配空间
+     *
+     * @param cache
+     * @param buf
+     * @param reqCapacity
+     */
     private void allocate(PoolThreadCache cache, PooledByteBuf<T> buf, final int reqCapacity) {
-        final int sizeIdx = size2SizeIdx(reqCapacity);
 
+        //获取sizeIdx
+        final int sizeIdx = size2SizeIdx(reqCapacity);
+        //
         if (sizeIdx <= smallMaxSizeIdx) {
+            //小空间
             tcacheAllocateSmall(cache, buf, reqCapacity, sizeIdx);
         } else if (sizeIdx < nSizes) {
+            //中空间
             tcacheAllocateNormal(cache, buf, reqCapacity, sizeIdx);
         } else {
+            //大空间
             int normCapacity = directMemoryCacheAlignment > 0
                     ? normalizeSize(reqCapacity) : reqCapacity;
             // Huge allocations are never served via the cache so just call allocateHuge

@@ -23,6 +23,7 @@ public interface SizeClassesMetric {
     /**
      * Computes size from lookup table according to sizeIdx.
      *
+     *
      * @return size
      */
     int sizeIdx2size(int sizeIdx);

@@ -39,6 +39,7 @@ final class PoolChunkList<T> implements PoolChunkListMetric {
     private final int minUsage;
     private final int maxUsage;
     private final int maxCapacity;
+    //PoolChunk/
     private PoolChunk<T> head;
     private final int freeMinThreshold;
     private final int freeMaxThreshold;
