@@ -18,6 +18,9 @@ package io.netty.buffer;
 /**
  * Implementations are responsible to allocate buffers. Implementations of this interface are expected to be
  * thread-safe.
+ * 实现负责申请内存
+ * 该接口实现应为线程安全（即多个线程不会同时申请到一块内存）
+ *
  */
 public interface ByteBufAllocator {
 
@@ -26,12 +29,14 @@ public interface ByteBufAllocator {
     /**
      * Allocate a {@link ByteBuf}. If it is a direct or heap buffer
      * depends on the actual implementation.
+     * 申请内存，它是申请到一个直接内存或者堆内存取决于实际的实现
      */
     ByteBuf buffer();
 
     /**
      * Allocate a {@link ByteBuf} with the given initial capacity.
      * If it is a direct or heap buffer depends on the actual implementation.
+     * 指定初始化容量的内存申请
      */
     ByteBuf buffer(int initialCapacity);
 
@@ -39,42 +44,51 @@ public interface ByteBufAllocator {
      * Allocate a {@link ByteBuf} with the given initial capacity and the given
      * maximal capacity. If it is a direct or heap buffer depends on the actual
      * implementation.
+     * 指定容量和最大容量的内存申请
      */
     ByteBuf buffer(int initialCapacity, int maxCapacity);
 
     /**
      * Allocate a {@link ByteBuf}, preferably a direct buffer which is suitable for I/O.
+     * 申请一个适合IO的缓冲区
+     *
      */
     ByteBuf ioBuffer();
 
     /**
      * Allocate a {@link ByteBuf}, preferably a direct buffer which is suitable for I/O.
+     * 指定容量的适合io的缓冲区
      */
     ByteBuf ioBuffer(int initialCapacity);
 
     /**
      * Allocate a {@link ByteBuf}, preferably a direct buffer which is suitable for I/O.
+     *
      */
     ByteBuf ioBuffer(int initialCapacity, int maxCapacity);
 
     /**
      * Allocate a heap {@link ByteBuf}.
+     * 对内存申请
      */
     ByteBuf heapBuffer();
 
     /**
      * Allocate a heap {@link ByteBuf} with the given initial capacity.
+     * 指定容量的堆内存申请
      */
     ByteBuf heapBuffer(int initialCapacity);
 
     /**
      * Allocate a heap {@link ByteBuf} with the given initial capacity and the given
      * maximal capacity.
+     *
      */
     ByteBuf heapBuffer(int initialCapacity, int maxCapacity);
 
     /**
      * Allocate a direct {@link ByteBuf}.
+     * 直接内存申请
      */
     ByteBuf directBuffer();
 
@@ -92,12 +106,14 @@ public interface ByteBufAllocator {
     /**
      * Allocate a {@link CompositeByteBuf}.
      * If it is a direct or heap buffer depends on the actual implementation.
+     * 组合缓冲区申请 （多个缓冲区和并为组合缓冲区）
      */
     CompositeByteBuf compositeBuffer();
 
     /**
      * Allocate a {@link CompositeByteBuf} with the given maximum number of components that can be stored in it.
      * If it is a direct or heap buffer depends on the actual implementation.
+     * 
      */
     CompositeByteBuf compositeBuffer(int maxNumComponents);
 
