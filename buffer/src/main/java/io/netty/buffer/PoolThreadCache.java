@@ -46,13 +46,20 @@ final class PoolThreadCache {
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(PoolThreadCache.class);
     private static final int INTEGER_SIZE_MINUS_ONE = Integer.SIZE - 1;
 
+
+    //堆内存区域
     final PoolArena<byte[]> heapArena;
+    //直接内存区域
     final PoolArena<ByteBuffer> directArena;
 
     // Hold the caches for the different size classes, which are tiny, small and normal.
+    //小页堆缓存
     private final MemoryRegionCache<byte[]>[] smallSubPageHeapCaches;
+    //小页直接缓存
     private final MemoryRegionCache<ByteBuffer>[] smallSubPageDirectCaches;
+    //中页堆缓存
     private final MemoryRegionCache<byte[]>[] normalHeapCaches;
+    //中页直接缓存
     private final MemoryRegionCache<ByteBuffer>[] normalDirectCaches;
 
     private final int freeSweepAllocationThreshold;

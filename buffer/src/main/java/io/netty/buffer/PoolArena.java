@@ -162,6 +162,7 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
 
         //获取sizeIdx
         final int sizeIdx = size2SizeIdx(reqCapacity);
+        logger.info("allocate.sizeIdx:"+sizeIdx);
         //
         if (sizeIdx <= smallMaxSizeIdx) {
             //小空间
