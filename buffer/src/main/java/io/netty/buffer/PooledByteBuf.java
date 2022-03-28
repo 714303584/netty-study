@@ -17,6 +17,8 @@
 package io.netty.buffer;
 
 import io.netty.util.internal.ObjectPool.Handle;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -28,6 +30,7 @@ import java.nio.channels.ScatteringByteChannel;
 
 abstract class PooledByteBuf<T> extends AbstractReferenceCountedByteBuf {
 
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(PooledByteBuf.class);
     private final Handle<PooledByteBuf<T>> recyclerHandle;
 
     protected PoolChunk<T> chunk;
@@ -250,6 +253,8 @@ abstract class PooledByteBuf<T> extends AbstractReferenceCountedByteBuf {
     @Override
     public final int setBytes(int index, ScatteringByteChannel in, int length) throws IOException {
         try {
+            //将channel中的数据写入buff中
+            logger.info("channel 读取(read)数据到buff");
             return in.read(internalNioBuffer(index, length));
         } catch (ClosedChannelException ignored) {
             return -1;

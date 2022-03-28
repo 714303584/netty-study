@@ -36,6 +36,8 @@ import java.util.NoSuchElementException;
  * to give a user full control over how an event is handled and how the {@link ChannelHandler}s in a pipeline
  * interact with each other.
  *
+ * 一个handles的列表
+ *
  * <h3>Creation of a pipeline</h3>
  *
  * Each channel has its own pipeline and it is created automatically when a new channel is created.

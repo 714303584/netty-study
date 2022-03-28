@@ -16,6 +16,8 @@
 package io.netty.channel;
 
 import io.netty.channel.ChannelHandlerMask.Skip;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 
 /**
  * Abstract base class for {@link ChannelInboundHandler} implementations which provide
@@ -32,6 +34,8 @@ import io.netty.channel.ChannelHandlerMask.Skip;
  * </p>
  */
 public class ChannelInboundHandlerAdapter extends ChannelHandlerAdapter implements ChannelInboundHandler {
+
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(ChannelInboundHandlerAdapter.class);
 
     /**
      * Calls {@link ChannelHandlerContext#fireChannelRegistered()} to forward
@@ -90,6 +94,7 @@ public class ChannelInboundHandlerAdapter extends ChannelHandlerAdapter implemen
     @Skip
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        logger.info("channelRead:"+msg.getClass()+"");
         ctx.fireChannelRead(msg);
     }
 

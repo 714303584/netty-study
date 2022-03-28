@@ -40,6 +40,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * technics of
  * <a href="https://www.facebook.com/notes/facebook-engineering/scalable-memory-allocation-using-jemalloc/480222803919">
  * Scalable memory allocation using jemalloc</a>.
+ * 线程内存空间
+ * 为某一线程指定内存分配的空间
  */
 final class PoolThreadCache {
 
@@ -101,11 +103,13 @@ final class PoolThreadCache {
             heapArena.numThreadCaches.getAndIncrement();
         } else {
             // No heapArea is configured so just null out all caches
+            // 未配置堆内存空间 为空
             smallSubPageHeapCaches = null;
             normalHeapCaches = null;
         }
 
         // Only check if there are caches in use.
+        //判断缓存是否使用
         if ((smallSubPageDirectCaches != null || normalDirectCaches != null
                 || smallSubPageHeapCaches != null || normalHeapCaches != null)
                 && freeSweepAllocationThreshold < 1) {
@@ -153,15 +157,19 @@ final class PoolThreadCache {
 
     /**
      * Try to allocate a small buffer out of the cache. Returns {@code true} if successful {@code false} otherwise
+     * 申请小缓存
      */
     boolean allocateSmall(PoolArena<?> area, PooledByteBuf<?> buf, int reqCapacity, int sizeIdx) {
+        logger.info("Thread:"+Thread.currentThread().getName()+"allocateSmall()");
         return allocate(cacheForSmall(area, sizeIdx), buf, reqCapacity);
     }
 
     /**
      * Try to allocate a normal buffer out of the cache. Returns {@code true} if successful {@code false} otherwise
+     * 申请中缓存
      */
     boolean allocateNormal(PoolArena<?> area, PooledByteBuf<?> buf, int reqCapacity, int sizeIdx) {
+        logger.info("Thread:"+Thread.currentThread().getName()+"allocateSmall()");
         return allocate(cacheForNormal(area, sizeIdx), buf, reqCapacity);
     }
 
@@ -217,6 +225,7 @@ final class PoolThreadCache {
 
     /**
      *  Should be called if the Thread that uses this cache is about to exist to release resources out of the cache
+     *  释放空间
      */
     void free(boolean finalizer) {
         // As free() may be called either by the finalizer or by FastThreadLocal.onRemoval(...) we need to ensure
