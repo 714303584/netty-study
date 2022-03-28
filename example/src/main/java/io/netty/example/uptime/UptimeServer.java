@@ -52,6 +52,7 @@ public final class UptimeServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel ch) {
+
                             ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0,4));
 //                            ch.pipeline().addLast(new StringDecoder());
                             ch.pipeline().addLast(handler);

@@ -225,6 +225,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     }
 
     private void addLast0(AbstractChannelHandlerContext newCtx) {
+        logger.info("addLast添加："+newCtx.getClass()+"到链表的最后一个");
         AbstractChannelHandlerContext prev = tail.prev;
         newCtx.prev = prev;
         newCtx.next = tail;
@@ -372,6 +373,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
     @Override
     public final ChannelPipeline addLast(EventExecutorGroup executor, ChannelHandler... handlers) {
+        logger.info("添加channelHandler到列表");
         ObjectUtil.checkNotNull(handlers, "handlers");
 
         for (ChannelHandler h: handlers) {

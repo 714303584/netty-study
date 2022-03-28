@@ -123,6 +123,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
      * Set the {@link ChannelHandler} which is used to serve the request for the {@link Channel}'s.
      */
     public ServerBootstrap childHandler(ChannelHandler childHandler) {
+        logger.info("childHandler 获取handler集合");
         this.childHandler = ObjectUtil.checkNotNull(childHandler, "childHandler");
         return this;
     }
