@@ -373,10 +373,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
     @Override
     public final ChannelPipeline addLast(EventExecutorGroup executor, ChannelHandler... handlers) {
-        logger.info("添加channelHandler到列表");
         ObjectUtil.checkNotNull(handlers, "handlers");
-
         for (ChannelHandler h: handlers) {
+            logger.info("添加channelHandler到列表 "+h.getClass().getCanonicalName());
             if (h == null) {
                 break;
             }

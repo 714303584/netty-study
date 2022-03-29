@@ -359,12 +359,14 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     }
 
     static void invokeChannelRead(final AbstractChannelHandlerContext next, Object msg) {
-        logger.info("invokeChannelRead 处理："+msg.getClass()+" next:"+next.getClass());
+        logger.info("invokeChannelRead 处理："+msg.getClass()+" next:"+next.getClass().getCanonicalName());
         final Object m = next.pipeline.touch(ObjectUtil.checkNotNull(msg, "msg"), next);
         EventExecutor executor = next.executor();
         if (executor.inEventLoop()) {
+            logger.info("executor.inEventLoop() --> next.invokeChannelRead(m);");
             next.invokeChannelRead(m);
         } else {
+            logger.info("  executor.execute(new Runnable() {");
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -375,9 +377,12 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     }
 
     private void invokeChannelRead(Object msg) {
+        logger.info("invokeChannelRead class:"+this.getClass().getName()+"处理:"+msg.getClass());
         if (invokeHandler()) {
             try {
-                logger.info("invokeChannelRead处理:"+msg.getClass());
+
+                logger.info("handler:"+((ChannelInboundHandler) handler()).getClass().getName());
+
                 ((ChannelInboundHandler) handler()).channelRead(this, msg);
             } catch (Throwable t) {
                 invokeExceptionCaught(t);

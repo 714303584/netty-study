@@ -95,6 +95,9 @@ public final class UptimeClient {
             );
             //Thread.sleep(110);
             i++;
+            if( i >1 ){
+                return;
+            }
         }
 //        channelFuture.channel().flush();
 
