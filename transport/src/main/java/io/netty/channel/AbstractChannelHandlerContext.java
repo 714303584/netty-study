@@ -358,6 +358,11 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         return this;
     }
 
+    /**
+     * head --
+     * @param next
+     * @param msg
+     */
     static void invokeChannelRead(final AbstractChannelHandlerContext next, Object msg) {
         logger.info("invokeChannelRead 处理："+msg.getClass()+" next:"+next.getClass().getCanonicalName());
         final Object m = next.pipeline.touch(ObjectUtil.checkNotNull(msg, "msg"), next);
