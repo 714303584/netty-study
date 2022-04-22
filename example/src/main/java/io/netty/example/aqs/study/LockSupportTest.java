@@ -1,48 +1,45 @@
 package io.netty.example.aqs.study;
 
-import java.util.concurrent.locks.ReentrantLock;
+
+import java.util.concurrent.locks.LockSupport;
 
 /**
- * aqs学习 -- 自定义锁的实现
+ * LockSupport 源码学习
  */
-public class AqsStudy {
-
-
-
+public class LockSupportTest {
 
     public static void main(String[] args) {
 
-              MyLock myLock = new MyLock();
 
-
-        new Thread(new Runnable() {
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
+                    LockSupport.park();
                     Thread.sleep(100L);
 
-                    myLock.lock();
-                    System.out.println(Thread.currentThread().getName()+" myLock! ");
+
+                    System.out.println(Thread.currentThread().getName() + " myLock! ");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
             }
-        }).start();
+        });
+        thread.start();
 
-
-        myLock.lock();
         System.out.println("main myLock!");
 
         try {
             Thread.sleep(5000L);
+            LockSupport.unpark(thread);
 
-            myLock.unlock();
+
+            Thread.sleep(5000L);
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-
     }
-
 }
