@@ -28,7 +28,8 @@ created by zhuss
         节点的等待状态为waitStatus
             * CANCELLED（1）： 取消状态，当线程不再希望获取锁时，设置为取消状态。
             * SIGNAL（-1）：当前节点的后继者处于等待状态，前节点的线程如果释放或取消了同步状态，通知后继节点。
-            * 
+            * CONDITION(-2) : 表示结点等待在Condition上，当其他线程调用了Condition的signal()方法后，CONDITION状态的结点将从等待队列转移到同步队列中，等待获取同步锁
+            * PROPAGATE(-3) : 传递状态,前继节点不仅会唤醒其后继节点，同时也有可能唤醒后继的后继节点。
         上一个节点prev和下一个节点next
             * prev上一个节点
             * next下一个节点
