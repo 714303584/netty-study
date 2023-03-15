@@ -46,6 +46,7 @@ public final class UptimeServer {
 
         //事件循环组
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
             ServerBootstrap b = new ServerBootstrap();
