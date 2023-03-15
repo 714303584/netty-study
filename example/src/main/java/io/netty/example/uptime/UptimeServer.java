@@ -32,6 +32,8 @@ import io.netty.handler.logging.LoggingHandler;
 /**
  * Uptime server is served as a connection server.
  * So it simply discards all message received.
+ *
+ * 注解开始
  */
 public final class UptimeServer {
     private static final int PORT = Integer.parseInt(System.getProperty("port", "8888"));
@@ -42,6 +44,7 @@ public final class UptimeServer {
 
     public static void main(String[] args) throws Exception {
 
+        //事件
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
