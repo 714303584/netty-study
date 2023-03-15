@@ -44,7 +44,7 @@ public final class UptimeServer {
 
     public static void main(String[] args) throws Exception {
 
-        //事件
+        //事件循环组
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
