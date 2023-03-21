@@ -39,11 +39,13 @@ import java.util.concurrent.RejectedExecutionException;
 
 /**
  * A skeletal {@link Channel} implementation.
+ *
+ *Channel的框架实现
  */
 public abstract class AbstractChannel extends DefaultAttributeMap implements Channel {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractChannel.class);
-
+    //来源
     private final Channel parent;
     private final ChannelId id;
     private final Unsafe unsafe;
@@ -53,7 +55,10 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
     private volatile SocketAddress localAddress;
     private volatile SocketAddress remoteAddress;
+    //此通道的事件循环
+    //托管此通道的线程
     private volatile EventLoop eventLoop;
+    //是否注册
     private volatile boolean registered;
     private boolean closeInitiated;
     private Throwable initialCloseCause;
@@ -65,6 +70,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
     /**
      * Creates a new instance.
      *
+     * 创建一个新实例
      * @param parent
      *        the parent of this channel. {@code null} if there's no parent.
      */
@@ -343,6 +349,8 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
     /**
      * Create a new {@link AbstractUnsafe} instance which will be used for the life-time of the {@link Channel}
+     * 虚拟方法 子类实现
+     *  创建一个实例AbstractUnsafe
      */
     protected abstract AbstractUnsafe newUnsafe();
 

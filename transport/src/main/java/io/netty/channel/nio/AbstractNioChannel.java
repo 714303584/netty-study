@@ -71,6 +71,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
 
     /**
      * Create a new instance
+     * 创建一个通道实例
      *
      * @param parent            the parent {@link Channel} by which this instance was created. May be {@code null}
      * @param ch                the underlying {@link SelectableChannel} on which it operates
@@ -104,10 +105,18 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         return (NioUnsafe) super.unsafe();
     }
 
+    /**
+     * 获取JAVA的通道
+     * @return
+     */
     protected SelectableChannel javaChannel() {
         return ch;
     }
 
+    /**
+     * 获取时间循环
+     * @return
+     */
     @Override
     public NioEventLoop eventLoop() {
         return (NioEventLoop) super.eventLoop();

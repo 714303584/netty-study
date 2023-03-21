@@ -64,6 +64,7 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
 
     /**
      * Create a new instance
+     * 创建一个新通道实例
      *
      * @param parent            the parent {@link Channel} by which this instance was created. May be {@code null}
      * @param ch                the underlying {@link SelectableChannel} on which it operates
@@ -100,6 +101,9 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
                 ((SocketChannelConfig) config).isAllowHalfClosure();
     }
 
+    /**
+     * unsafe进行通道中的消息读取
+     */
     protected class NioByteUnsafe extends AbstractNioUnsafe {
 
         private void closeOnRead(ChannelPipeline pipeline) {
@@ -137,9 +141,13 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
             }
         }
 
+        /**
+         * NIO通道进行消息读取的方法
+         */
         @Override
         public final void read() {
             logger.info("开始读取消息");
+            //获取通道配置
             final ChannelConfig config = config();
             if (shouldBreakReadReady(config)) {
                 clearReadPending();
