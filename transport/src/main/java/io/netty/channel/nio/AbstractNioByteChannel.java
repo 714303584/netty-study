@@ -41,6 +41,7 @@ import static io.netty.channel.internal.ChannelUtils.WRITE_STATUS_SNDBUF_FULL;
 
 /**
  * {@link AbstractNioChannel} base class for {@link Channel}s that operate on bytes.
+ * 抽象的NIO 通道
  */
 public abstract class AbstractNioByteChannel extends AbstractNioChannel {
 

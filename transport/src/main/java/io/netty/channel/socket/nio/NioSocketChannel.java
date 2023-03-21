@@ -59,6 +59,11 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(NioSocketChannel.class);
     private static final SelectorProvider DEFAULT_SELECTOR_PROVIDER = SelectorProvider.provider();
 
+    /**
+     * 静态的创建socket通道的方法
+     * @param provider
+     * @return
+     */
     private static SocketChannel newSocket(SelectorProvider provider) {
         try {
             /**
@@ -73,6 +78,7 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
         }
     }
 
+    //socket通道的配置
     private final SocketChannelConfig config;
 
     /**
@@ -98,9 +104,12 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
 
     /**
      * Create a new instance
+     * 创建一个NIO socket 通道
      *
      * @param parent    the {@link Channel} which created this instance or {@code null} if it was created by the user
+     *                  创建这个NIO socket通道的（通道）
      * @param socket    the {@link SocketChannel} which will be used
+     *                  这个NIO socket channel使用的socket（java的）
      */
     public NioSocketChannel(Channel parent, SocketChannel socket) {
         super(parent, socket);
