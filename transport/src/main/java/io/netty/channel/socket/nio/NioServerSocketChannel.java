@@ -175,7 +175,9 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
         SocketChannel ch = SocketUtils.accept(javaChannel());
         try {
             //通道不为空
-            if (ch != null) {   buf.add(new NioSocketChannel(this, ch));
+            if (ch != null) {
+                //重点NioSocketChannel
+                buf.add(new NioSocketChannel(this, ch));
                 return 1;
             }
         } catch (Throwable t) {
