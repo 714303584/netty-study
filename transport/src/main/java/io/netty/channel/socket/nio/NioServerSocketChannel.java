@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 一个NIO的服务端socket通道
  * A {@link io.netty.channel.socket.ServerSocketChannel} implementation which uses
  * NIO selector based implementation to accept new connections.
  */
@@ -51,6 +52,7 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(NioServerSocketChannel.class);
 
+    //静态方法获取服务器Socket通道
     private static ServerSocketChannel newSocket(SelectorProvider provider) {
         try {
             /**
@@ -66,10 +68,12 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
         }
     }
 
+    //服务端socket通道配置
     private final ServerSocketChannelConfig config;
 
     /**
      * Create a new instance
+     * 创建一个实例
      */
     public NioServerSocketChannel() {
         this(newSocket(DEFAULT_SELECTOR_PROVIDER));
@@ -77,6 +81,7 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
 
     /**
      * Create a new instance using the given {@link SelectorProvider}.
+     * 创建一个新实例使用给定的SelectProvider
      */
     public NioServerSocketChannel(SelectorProvider provider) {
         this(newSocket(provider));
@@ -105,6 +110,10 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
         return config;
     }
 
+    /**
+     * 判定此通道是否活跃
+     * @return
+     */
     @Override
     public boolean isActive() {
         // As java.nio.ServerSocketChannel.isBound() will continue to return true even after the channel was closed
@@ -117,6 +126,10 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
         return null;
     }
 
+    /**
+     * 获取JAVA通道
+     * @return
+     */
     @Override
     protected ServerSocketChannel javaChannel() {
         return (ServerSocketChannel) super.javaChannel();
@@ -131,6 +144,7 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
     @Override
     protected void doBind(SocketAddress localAddress) throws Exception {
         logger.info("NioServerSocketChannel执行dobind方法进行localAdreess的绑定");
+        //使用java通道进行IP地址绑定
         if (PlatformDependent.javaVersion() >= 7) {
             javaChannel().bind(localAddress, config.getBacklog());
         } else {
@@ -138,6 +152,10 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
         }
     }
 
+    /**
+     * 关闭通道
+     * @throws Exception
+     */
     @Override
     protected void doClose() throws Exception {
         javaChannel().close();
