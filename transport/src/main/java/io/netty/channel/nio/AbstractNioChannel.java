@@ -114,7 +114,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
     }
 
     /**
-     * 获取时间循环
+     * 获取事件循环
      * @return
      */
     @Override

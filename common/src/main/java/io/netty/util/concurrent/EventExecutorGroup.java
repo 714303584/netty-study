@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * 事件执行组
  *
  * 继承自 ScheduledExecutorService
- *          计划执行者服务
+ *          计划执行者服务  - 具有线程池的特性
  *
  */
 public interface EventExecutorGroup extends ScheduledExecutorService, Iterable<EventExecutor> {
@@ -86,7 +86,8 @@ public interface EventExecutorGroup extends ScheduledExecutorService, Iterable<E
 
     /**
      * Returns one of the {@link EventExecutor}s managed by this {@link EventExecutorGroup}.
-     * 下一个事件执行者
+     * 获取下一个事件执行者
+     *
      */
     EventExecutor next();
 
@@ -107,6 +108,13 @@ public interface EventExecutorGroup extends ScheduledExecutorService, Iterable<E
     @Override
     <T> Future<T> submit(Callable<T> task);
 
+    /**
+     * 定时执行
+     * @param command
+     * @param delay
+     * @param unit
+     * @return
+     */
     @Override
     ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit);
 

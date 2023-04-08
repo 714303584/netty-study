@@ -28,10 +28,22 @@ import static io.netty.util.concurrent.AbstractEventExecutor.*;
 
 /**
  * Abstract base class for {@link EventExecutorGroup} implementations.
+ * 事件执行组
+ *
+ *  虚拟的事件执行组
+ *      submit方法 -- 提交一个任务执行
+ *      schedule方法 -- 定时进行任务执行
+ *
  */
 public abstract class AbstractEventExecutorGroup implements EventExecutorGroup {
+    /**
+     * 提交任务执行
+     * @param task
+     * @return
+     */
     @Override
     public Future<?> submit(Runnable task) {
+        //获得一个执行器进行任务提交
         return next().submit(task);
     }
 
@@ -45,6 +57,13 @@ public abstract class AbstractEventExecutorGroup implements EventExecutorGroup {
         return next().submit(task);
     }
 
+    /**
+     * 定时进行任务执行
+     * @param command
+     * @param delay
+     * @param unit
+     * @return
+     */
     @Override
     public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
         return next().schedule(command, delay, unit);
@@ -110,6 +129,16 @@ public abstract class AbstractEventExecutorGroup implements EventExecutorGroup {
         return next().invokeAny(tasks, timeout, unit);
     }
 
+    /**
+     * 进行执行
+     *
+     * 这里注意区别 -- execute是没有返回的 submit是有返回结果的。
+     *
+     * submit返回的Future结果在get方法的时候是可以抛出异常的
+     *
+     *
+     * @param command
+     */
     @Override
     public void execute(Runnable command) {
         next().execute(command);

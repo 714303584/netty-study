@@ -39,7 +39,7 @@ import java.util.concurrent.RejectedExecutionException;
 
 /**
  * A skeletal {@link Channel} implementation.
- *
+ *  默认的channel
  *Channel的框架实现
  */
 public abstract class AbstractChannel extends DefaultAttributeMap implements Channel {
@@ -54,6 +54,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
     private final CloseFuture closeFuture = new CloseFuture(this);
 
     private volatile SocketAddress localAddress;
+
     private volatile SocketAddress remoteAddress;
     //此通道的事件循环
     //托管此通道的线程
