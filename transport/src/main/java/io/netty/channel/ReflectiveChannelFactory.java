@@ -23,15 +23,21 @@ import java.lang.reflect.Constructor;
 
 /**
  * A {@link ChannelFactory} that instantiates a new {@link Channel} by invoking its default constructor reflectively.
+ *  通道工厂 -- 以反射方式创建通道
  */
 public class ReflectiveChannelFactory<T extends Channel> implements ChannelFactory<T> {
 
     private final Constructor<? extends T> constructor;
 
+    /**
+     * 构造一个通道工厂
+     * System.out.print("ReflectiveChannelFactory(反射通道工厂)");
+     * @param clazz
+     */
     public ReflectiveChannelFactory(Class<? extends T> clazz) {
-        System.out.print("ReflectiveChannelFactory(反射通道工厂)");
         ObjectUtil.checkNotNull(clazz, "clazz");
         try {
+            //获取通道的构造方法
             this.constructor = clazz.getConstructor();
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException("Class " + StringUtil.simpleClassName(clazz) +
@@ -39,6 +45,10 @@ public class ReflectiveChannelFactory<T extends Channel> implements ChannelFacto
         }
     }
 
+    /**
+     * 通道工厂
+     * @return
+     */
     @Override
     public T newChannel() {
         try {
@@ -49,6 +59,10 @@ public class ReflectiveChannelFactory<T extends Channel> implements ChannelFacto
         }
     }
 
+    /**
+     * toString方法
+     * @return
+     */
     @Override
     public String toString() {
         return StringUtil.simpleClassName(ReflectiveChannelFactory.class) +
