@@ -163,9 +163,16 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         final Entry<ChannelOption<?>, Object>[] currentChildOptions = newOptionsArray(childOptions);
         final Entry<AttributeKey<?>, Object>[] currentChildAttrs = newAttributesArray(childAttrs);
 
+        //初始化channel
         p.addLast(new ChannelInitializer<Channel>() {
+            /**
+             * 初始化ChannelPipeline
+             * 处理流程
+             * @param ch            the {@link Channel} which was registered.
+             */
             @Override
             public void initChannel(final Channel ch) {
+
                 final ChannelPipeline pipeline = ch.pipeline();
                 ChannelHandler handler = config.handler();
                 if (handler != null) {
