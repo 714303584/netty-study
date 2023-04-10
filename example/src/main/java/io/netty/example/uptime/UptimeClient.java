@@ -51,6 +51,7 @@ public final class UptimeClient {
 
     public static void main(String[] args) throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
+
         bs.group(group)
                 .channel(NioSocketChannel.class)
                 .remoteAddress(HOST, PORT)

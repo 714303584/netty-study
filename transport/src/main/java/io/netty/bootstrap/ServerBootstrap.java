@@ -53,9 +53,14 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
     private final Map<ChannelOption<?>, Object> childOptions = new LinkedHashMap<ChannelOption<?>, Object>();
     private final Map<AttributeKey<?>, Object> childAttrs = new ConcurrentHashMap<AttributeKey<?>, Object>();
     private final ServerBootstrapConfig config = new ServerBootstrapConfig(this);
+
+    //childGroup 处理连接的线程池
     private volatile EventLoopGroup childGroup;
     private volatile ChannelHandler childHandler;
 
+    /**
+     * 默认的无参构造方法
+     */
     public ServerBootstrap() { }
 
     private ServerBootstrap(ServerBootstrap bootstrap) {
@@ -70,6 +75,9 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
 
     /**
      * Specify the {@link EventLoopGroup} which is used for the parent (acceptor) and the child (client).
+     * 设置EventLoopGroup
+     *
+     * 父子为同一个EventLoopGroup
      */
     @Override
     public ServerBootstrap group(EventLoopGroup group) {
@@ -81,7 +89,9 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
      * {@link EventLoopGroup}'s are used to handle all the events and IO for {@link ServerChannel} and
      * {@link Channel}'s.
      *
-     *
+     * 设置EventLoopGroup
+     *          parentGroup 父EventLoopGroup
+     *          childGroup 子EventLoopGroup
      */
     public ServerBootstrap group(EventLoopGroup parentGroup, EventLoopGroup childGroup) {
         super.group(parentGroup);
