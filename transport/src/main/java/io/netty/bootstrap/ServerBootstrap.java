@@ -232,11 +232,19 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
             };
         }
 
+
+        /**
+         * 通道的读取方法
+         *
+         * @param ctx 上下文
+         * @param msg  消息
+         */
         @Override
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
 
             logger.info("ServerBootstrap 调用通道读取 channelRead");
+            //消息为通道
             final Channel child = (Channel) msg;
 
             child.pipeline().addLast(childHandler);
@@ -245,6 +253,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
             setAttributes(child, childAttrs);
 
             try {
+                //将通道注册到子线程池
                 childGroup.register(child).addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {
