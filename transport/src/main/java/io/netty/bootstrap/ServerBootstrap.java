@@ -137,6 +137,8 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
 
     /**
      * Set the {@link ChannelHandler} which is used to serve the request for the {@link Channel}'s.
+     *
+     * 配置handler用于处理连接
      */
     public ServerBootstrap childHandler(ChannelHandler childHandler) {
         logger.info("childHandler 获取handler集合");
@@ -203,12 +205,19 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         return this;
     }
 
+    /**
+     *  Nio——通道的的基础入栈处理适配器
+     *  服务端的接收者
+     */
     private static class ServerBootstrapAcceptor extends ChannelInboundHandlerAdapter {
 
+        //处理线程组
         private final EventLoopGroup childGroup;
+        //通道处理者
         private final ChannelHandler childHandler;
         private final Entry<ChannelOption<?>, Object>[] childOptions;
         private final Entry<AttributeKey<?>, Object>[] childAttrs;
+        //启动的自动读取任务
         private final Runnable enableAutoReadTask;
 
         ServerBootstrapAcceptor(
