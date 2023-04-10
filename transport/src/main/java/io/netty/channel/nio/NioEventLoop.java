@@ -335,6 +335,12 @@ public final class NioEventLoop extends SingleThreadEventLoop {
         }
     }
 
+    /**
+     * 注册chennel到selector
+     * @param ch
+     * @param interestOps
+     * @param task
+     */
     private void register0(SelectableChannel ch, int interestOps, NioTask<?> task) {
         try {
             logger.info(Thread.currentThread().getName()+" 将channel注册到selector");

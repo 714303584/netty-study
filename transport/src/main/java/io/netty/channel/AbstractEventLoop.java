@@ -20,6 +20,8 @@ import io.netty.util.concurrent.AbstractEventExecutor;
 
 /**
  * Skeletal implementation of {@link EventLoop}.
+ *
+ * 虚拟的事件循环
  */
 public abstract class AbstractEventLoop extends AbstractEventExecutor implements EventLoop {
 
