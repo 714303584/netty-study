@@ -20,6 +20,10 @@ import io.netty.util.concurrent.AbstractEventExecutorGroup;
 
 /**
  * Skeletal implementation of {@link EventLoopGroup}.
+ *
+ * 虚拟的事件循环组
+ *
+ * 重新定义了next方法
  */
 public abstract class AbstractEventLoopGroup extends AbstractEventExecutorGroup implements EventLoopGroup {
     @Override
