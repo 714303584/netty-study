@@ -116,11 +116,21 @@ final class EmbeddedEventLoop extends AbstractScheduledEventExecutor implements 
         return false;
     }
 
+    /**
+     * 进行通道注册
+     * @param channel
+     * @return
+     */
     @Override
     public ChannelFuture register(Channel channel) {
         return register(new DefaultChannelPromise(channel, this));
     }
 
+    /**
+     * 进行通道注册
+     * @param promise
+     * @return
+     */
     @Override
     public ChannelFuture register(ChannelPromise promise) {
         ObjectUtil.checkNotNull(promise, "promise");

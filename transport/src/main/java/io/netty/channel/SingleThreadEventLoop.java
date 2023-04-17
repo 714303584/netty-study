@@ -31,6 +31,8 @@ import java.util.concurrent.ThreadFactory;
 /**
  * Abstract base class for {@link EventLoop}s that execute all its submitted tasks in a single thread.
  *
+ * 单线程事件循环
+ *      线程池中的循环
  */
 public abstract class SingleThreadEventLoop extends SingleThreadEventExecutor implements EventLoop {
 
@@ -76,17 +78,32 @@ public abstract class SingleThreadEventLoop extends SingleThreadEventExecutor im
         return (EventLoopGroup) super.parent();
     }
 
+    /**
+     * 获取下一个事件循环 调用的是父类的next方法
+     * @return
+     */
     @Override
     public EventLoop next() {
         return (EventLoop) super.next();
     }
 
+    /**
+     * 进行通道注册 -- 将客户端连接注册到事件循环
+     * @param channel
+     * @return
+     */
     @Override
     public ChannelFuture register(Channel channel) {
         logger.info("SingleThreadEventLoop 通道注册 channel");
+        // TODO 注意DefaultChannelPromise 使用观察者模式  ---
         return register(new DefaultChannelPromise(channel, this));
     }
 
+    /**
+     * 进行通道注册
+     * @param promise
+     * @return
+     */
     @Override
     public ChannelFuture register(final ChannelPromise promise) {
         ObjectUtil.checkNotNull(promise, "promise");

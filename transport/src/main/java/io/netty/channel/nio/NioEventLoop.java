@@ -50,9 +50,10 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 单线程的事件循环组
+ * NIO单线程的事件循环组
  * {@link SingleThreadEventLoop} implementation which register the {@link Channel}'s to a
  * {@link Selector} and so does the multi-plexing of these in the event loop.
+ *
  *
  */
 public final class NioEventLoop extends SingleThreadEventLoop {

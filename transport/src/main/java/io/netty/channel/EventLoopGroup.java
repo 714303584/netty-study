@@ -37,6 +37,9 @@ public interface EventLoopGroup extends EventExecutorGroup {
      * 注册一个Channel
      * Register a {@link Channel} with this {@link EventLoop}. The returned {@link ChannelFuture}
      * will get notified once the registration was complete.
+     * 注册一个通道到此事件循环组
+     *
+     * NIO 将client注册到selector上进行侦听
      */
     ChannelFuture register(Channel channel);
 
