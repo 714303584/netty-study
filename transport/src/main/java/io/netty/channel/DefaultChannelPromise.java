@@ -26,6 +26,8 @@ import static io.netty.util.internal.ObjectUtil.checkNotNull;
 /**
  * The default {@link ChannelPromise} implementation.  It is recommended to use {@link Channel#newPromise()} to create
  * a new {@link ChannelPromise} rather than calling the constructor explicitly.
+ *
+ * TODO 观察者模式-- 进行事件出发
  */
 public class DefaultChannelPromise extends DefaultPromise<Void> implements ChannelPromise, FlushCheckpoint {
 
@@ -47,12 +49,18 @@ public class DefaultChannelPromise extends DefaultPromise<Void> implements Chann
      *
      * @param channel
      *        the {@link Channel} associated with this future
+     *        创建一个默认的通道承诺
      */
     public DefaultChannelPromise(Channel channel, EventExecutor executor) {
         super(executor);
         this.channel = checkNotNull(channel, "channel");
     }
 
+    /**
+     * 获取通道承诺的执行者
+     * 获取的事件循环(EventLoop)
+     * @return
+     */
     @Override
     protected EventExecutor executor() {
         EventExecutor e = super.executor();
@@ -63,11 +71,19 @@ public class DefaultChannelPromise extends DefaultPromise<Void> implements Chann
         }
     }
 
+    /**
+     * 获取通道
+     * @return
+     */
     @Override
     public Channel channel() {
         return channel;
     }
 
+    /**
+     * 设置成功
+     * @return
+     */
     @Override
     public ChannelPromise setSuccess() {
         return setSuccess(null);
@@ -90,30 +106,55 @@ public class DefaultChannelPromise extends DefaultPromise<Void> implements Chann
         return this;
     }
 
+    /**
+     * 添加监听事件
+     * @param listener
+     * @return
+     */
     @Override
     public ChannelPromise addListener(GenericFutureListener<? extends Future<? super Void>> listener) {
         super.addListener(listener);
         return this;
     }
 
+    /**
+     * 设置监听
+     * @param listeners
+     * @return
+     */
     @Override
     public ChannelPromise addListeners(GenericFutureListener<? extends Future<? super Void>>... listeners) {
         super.addListeners(listeners);
         return this;
     }
 
+    /**
+     * 移除监听
+     * @param listener
+     * @return
+     */
     @Override
     public ChannelPromise removeListener(GenericFutureListener<? extends Future<? super Void>> listener) {
         super.removeListener(listener);
         return this;
     }
 
+    /**
+     * 移除监听列表
+     * @param listeners
+     * @return
+     */
     @Override
     public ChannelPromise removeListeners(GenericFutureListener<? extends Future<? super Void>>... listeners) {
         super.removeListeners(listeners);
         return this;
     }
 
+    /**
+     * sync方法
+     * @return
+     * @throws InterruptedException
+     */
     @Override
     public ChannelPromise sync() throws InterruptedException {
         super.sync();
@@ -126,6 +167,11 @@ public class DefaultChannelPromise extends DefaultPromise<Void> implements Chann
         return this;
     }
 
+    /**
+     * 等待
+     * @return
+     * @throws InterruptedException
+     */
     @Override
     public ChannelPromise await() throws InterruptedException {
         super.await();
