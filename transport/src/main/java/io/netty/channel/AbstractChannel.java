@@ -470,6 +470,11 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
             return remoteAddress0();
         }
 
+        /**
+         * 注册方法
+         * @param eventLoop
+         * @param promise
+         */
         @Override
         public final void register(EventLoop eventLoop, final ChannelPromise promise) {
             logger.info("register方法 将EventLoop和channel绑定 ");
@@ -486,10 +491,13 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
             AbstractChannel.this.eventLoop = eventLoop;
 
+            //进行注册
             if (eventLoop.inEventLoop()) {
+
                 register0(promise);
             } else {
                 try {
+
                     eventLoop.execute(new Runnable() {
                         @Override
                         public void run() {
@@ -507,6 +515,10 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
             }
         }
 
+        /**
+         * 进行通道注册的方法
+         * @param promise
+         */
         private void register0(ChannelPromise promise) {
             logger.info("实际执行register0方法");
             try {
