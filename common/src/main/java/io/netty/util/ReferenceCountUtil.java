@@ -84,8 +84,10 @@ public final class ReferenceCountUtil {
     /**
      * Try to call {@link ReferenceCounted#release()} if the specified message implements {@link ReferenceCounted}.
      * If the specified message doesn't implement {@link ReferenceCounted}, this method does nothing.
+     * 进行释放
      */
     public static boolean release(Object msg) {
+        // 判断释放对象是否为ReferenceCounted
         if (msg instanceof ReferenceCounted) {
             return ((ReferenceCounted) msg).release();
         }
@@ -110,6 +112,7 @@ public final class ReferenceCountUtil {
      * Unlike {@link #release(Object)} this method catches an exception raised by {@link ReferenceCounted#release()}
      * and logs it, rather than rethrowing it to the caller.  It is usually recommended to use {@link #release(Object)}
      * instead, unless you absolutely need to swallow an exception.
+     * 进行安全释放
      */
     public static void safeRelease(Object msg) {
         try {

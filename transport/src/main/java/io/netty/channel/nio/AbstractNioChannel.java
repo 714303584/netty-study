@@ -44,14 +44,18 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Abstract base class for {@link Channel} implementations which use a Selector based approach.
+ * 基于Selector抽象的基础通道实现类
  */
 public abstract class AbstractNioChannel extends AbstractChannel {
 
     private static final InternalLogger logger =
             InternalLoggerFactory.getInstance(AbstractNioChannel.class);
 
+    //JavaSdk的SelectableChannel
     private final SelectableChannel ch;
+    //
     protected final int readInterestOp;
+    //选择key
     volatile SelectionKey selectionKey;
     boolean readPending;
     private final Runnable clearReadPendingRunnable = new Runnable() {
@@ -241,6 +245,12 @@ public abstract class AbstractNioChannel extends AbstractChannel {
             return javaChannel();
         }
 
+        /**
+         * 通道连接 方法 -- final修饰 不可重载
+         * @param remoteAddress 远程地址
+         * @param localAddress 本地地址
+         * @param promise // TODO 好好研究下ChannelPromise
+         */
         @Override
         public final void connect(
                 final SocketAddress remoteAddress, final SocketAddress localAddress, final ChannelPromise promise) {
@@ -255,6 +265,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
                 }
 
                 boolean wasActive = isActive();
+                //进行连接
                 if (doConnect(remoteAddress, localAddress)) {
                     fulfillConnectPromise(promise, wasActive);
                 } else {
@@ -299,6 +310,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         private void fulfillConnectPromise(ChannelPromise promise, boolean wasActive) {
             if (promise == null) {
                 // Closed via cancellation and the promise has been notified already.
+                //promise 未准备好
                 return;
             }
 
@@ -409,11 +421,19 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         }
     }
 
+    /**
+     * 进行解绑
+     * @throws Exception
+     */
     @Override
     protected void doDeregister() throws Exception {
         eventLoop().cancel(selectionKey());
     }
 
+    /**
+     * 进行开始读取
+     * @throws Exception
+     */
     @Override
     protected void doBeginRead() throws Exception {
         // Channel.read() or ChannelHandlerContext.read() was called
@@ -476,30 +496,44 @@ public abstract class AbstractNioChannel extends AbstractChannel {
      * The caller must ensure that the holder releases the original {@link ByteBuf} when the holder is released by
      * this method.  Note that this method does not create an off-heap copy if the allocation / deallocation cost is
      * too high, but just returns the original {@link ByteBuf}..
+     *
+     * 申请直接内存
+     *
      */
     protected final ByteBuf newDirectBuffer(ReferenceCounted holder, ByteBuf buf) {
+        //可读数组数量
         final int readableBytes = buf.readableBytes();
         if (readableBytes == 0) {
+            //可读数组为空
             ReferenceCountUtil.safeRelease(holder);
             return Unpooled.EMPTY_BUFFER;
         }
 
+        //获取缓存分配器
         final ByteBufAllocator alloc = alloc();
+        //判断是否是直接内存池
+        //直接内存池
         if (alloc.isDirectBufferPooled()) {
+            //直接内存池申请内存
             ByteBuf directBuf = alloc.directBuffer(readableBytes);
+            //从buf重读取字节
             directBuf.writeBytes(buf, buf.readerIndex(), readableBytes);
+            //进行
             ReferenceCountUtil.safeRelease(holder);
             return directBuf;
         }
 
+        //线程本地直接内存
         final ByteBuf directBuf = ByteBufUtil.threadLocalDirectBuffer();
         if (directBuf != null) {
+            //
             directBuf.writeBytes(buf, buf.readerIndex(), readableBytes);
             ReferenceCountUtil.safeRelease(holder);
             return directBuf;
         }
 
         // Allocating and deallocating an unpooled direct buffer is very expensive; give up.
+        //holder
         if (holder != buf) {
             // Ensure to call holder.release() to give the holder a chance to release other resources than its content.
             buf.retain();

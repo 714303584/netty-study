@@ -1281,14 +1281,16 @@ public final class ByteBufUtil {
 
     /**
      * Returns a cached thread-local direct buffer, if available.
+     * 返回一个线程本地的直接缓存
      *
      * @return a cached thread-local direct buffer, if available.  {@code null} otherwise.
      */
     public static ByteBuf threadLocalDirectBuffer() {
+        //不存再
         if (THREAD_LOCAL_BUFFER_SIZE <= 0) {
             return null;
         }
-
+        //根据是否安全进行内存申请
         if (PlatformDependent.hasUnsafe()) {
             return ThreadLocalUnsafeDirectByteBuf.newInstance();
         } else {

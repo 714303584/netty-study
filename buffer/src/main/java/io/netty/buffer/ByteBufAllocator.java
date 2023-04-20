@@ -94,6 +94,7 @@ public interface ByteBufAllocator {
 
     /**
      * Allocate a direct {@link ByteBuf} with the given initial capacity.
+     * //通过初始化容量进行内存申请
      */
     ByteBuf directBuffer(int initialCapacity);
 
@@ -113,7 +114,7 @@ public interface ByteBufAllocator {
     /**
      * Allocate a {@link CompositeByteBuf} with the given maximum number of components that can be stored in it.
      * If it is a direct or heap buffer depends on the actual implementation.
-     * 
+     *
      */
     CompositeByteBuf compositeBuffer(int maxNumComponents);
 
