@@ -78,10 +78,16 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     }
 
     AbstractBootstrap(AbstractBootstrap<B, C> bootstrap) {
+        //设置事件循环组
+        //EventLoopGroup
         group = bootstrap.group;
+        //设置通道工厂 -- 这里用的反射通道工厂
         channelFactory = bootstrap.channelFactory;
+        //设置handler
         handler = bootstrap.handler;
+        //本地地址
         localAddress = bootstrap.localAddress;
+        //
         synchronized (bootstrap.options) {
             options.putAll(bootstrap.options);
         }
