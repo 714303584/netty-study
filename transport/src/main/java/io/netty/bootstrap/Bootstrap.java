@@ -63,6 +63,7 @@ public class Bootstrap extends AbstractBootstrap<Bootstrap, Channel> {
     private Bootstrap(Bootstrap bootstrap) {
         super(bootstrap);
         resolver = bootstrap.resolver;
+        //远程连接的地址
         remoteAddress = bootstrap.remoteAddress;
     }
 
@@ -239,6 +240,12 @@ public class Bootstrap extends AbstractBootstrap<Bootstrap, Channel> {
         return promise;
     }
 
+    /**
+     * 进行远程连接
+     * @param remoteAddress
+     * @param localAddress
+     * @param connectPromise
+     */
     private static void doConnect(
             final SocketAddress remoteAddress, final SocketAddress localAddress, final ChannelPromise connectPromise) {
 
@@ -258,6 +265,10 @@ public class Bootstrap extends AbstractBootstrap<Bootstrap, Channel> {
         });
     }
 
+    /**
+     * 初始化客户端的通道
+     * @param channel
+     */
     @Override
     void init(Channel channel) {
         ChannelPipeline p = channel.pipeline();
