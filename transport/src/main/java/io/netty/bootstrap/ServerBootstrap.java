@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * {@link Bootstrap} sub-class which allows easy bootstrap of {@link ServerChannel}
  *
- * 一个服务引导程序
+ * 一个客户端的引导程序
  *
  */
 public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerChannel> {
@@ -150,6 +150,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
      * ServerBootstrap初始化通道
      * @param channel  channel通道 io.netty.channel.Channel
      *                 //TODO 这个通道
+     *                 初始化的这个通道是程序自身的通道
      */
     @Override
     void init(Channel channel) {
