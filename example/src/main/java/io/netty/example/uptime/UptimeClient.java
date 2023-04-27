@@ -36,6 +36,8 @@ import java.util.zip.Deflater;
  * Connects to a server periodically to measure and print the uptime of the
  * server.  This example demonstrates how to implement reliable reconnection
  * mechanism in Netty.
+ *
+ * UptimeClient 学习client的实现
  */
 public final class UptimeClient {
 
@@ -50,11 +52,15 @@ public final class UptimeClient {
     private static final Bootstrap bs = new Bootstrap();
 
     public static void main(String[] args) throws Exception {
+        //事件循环组-- 进行事件消费
         EventLoopGroup group = new NioEventLoopGroup();
 
         bs.group(group)
+                //设置通道
                 .channel(NioSocketChannel.class)
+                //远程连接的地址
                 .remoteAddress(HOST, PORT)
+                //配置出入站主力器（Handler）
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {

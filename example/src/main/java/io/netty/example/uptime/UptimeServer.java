@@ -33,7 +33,7 @@ import io.netty.handler.logging.LoggingHandler;
  * Uptime server is served as a connection server.
  * So it simply discards all message received.
  *
- * 注解开始
+ * 通过UptimeServer来进行Netty的学习
  */
 public final class UptimeServer {
     private static final int PORT = Integer.parseInt(System.getProperty("port", "8888"));
@@ -51,7 +51,9 @@ public final class UptimeServer {
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
+                    //配置通道实现类为NioServerSocketChannel
                     .channel(NioServerSocketChannel.class)
+                    //配置log等级
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
