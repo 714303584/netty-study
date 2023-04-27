@@ -225,6 +225,7 @@ public class SocketConnectTest extends AbstractSocketTest {
     private static final class EchoServerHandler extends ChannelInboundHandlerAdapter {
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+
             if (msg instanceof ByteBuf) {
                 ByteBuf buffer = ctx.alloc().buffer();
                 ByteBuf buf = (ByteBuf) msg;

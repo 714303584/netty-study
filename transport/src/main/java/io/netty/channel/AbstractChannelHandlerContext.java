@@ -352,6 +352,11 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         }
     }
 
+    /**
+     *
+     * @param msg
+     * @return
+     */
     @Override
     public ChannelHandlerContext fireChannelRead(final Object msg) {
         invokeChannelRead(findContextInbound(MASK_CHANNEL_READ), msg);
@@ -359,19 +364,27 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
     }
 
     /**
-     * head --
+     * 调用通道读取
+     * //进行读取
      * @param next
      * @param msg
      */
     static void invokeChannelRead(final AbstractChannelHandlerContext next, Object msg) {
         logger.info("invokeChannelRead 处理："+msg.getClass()+" next:"+next.getClass().getCanonicalName());
+        //进行读取
         final Object m = next.pipeline.touch(ObjectUtil.checkNotNull(msg, "msg"), next);
+        //获取事件执行者 -- 进行
         EventExecutor executor = next.executor();
+        //判断是否再事件循环中
         if (executor.inEventLoop()) {
             logger.info("executor.inEventLoop() --> next.invokeChannelRead(m);");
+
             next.invokeChannelRead(m);
         } else {
+
             logger.info("  executor.execute(new Runnable() {");
+            //没在事件循环中
+            //提交一个执行请求 -- 等待事件循环进行读取
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -381,13 +394,18 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         }
     }
 
+    /**
+     * 调用通道的读取
+     * @param msg
+     */
     private void invokeChannelRead(Object msg) {
+        //执行读取功能
         logger.info("invokeChannelRead class:"+this.getClass().getName()+"处理:"+msg.getClass());
         if (invokeHandler()) {
             try {
-
                 logger.info("handler:"+((ChannelInboundHandler) handler()).getClass().getName());
-
+                //进行读取
+                //调用handler功能进行读取 通常调用 ChannelInboundHandlerAdapter的子类进行消息的读取
                 ((ChannelInboundHandler) handler()).channelRead(this, msg);
             } catch (Throwable t) {
                 invokeExceptionCaught(t);

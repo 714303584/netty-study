@@ -36,19 +36,27 @@ import java.util.NoSuchElementException;
  * to give a user full control over how an event is handled and how the {@link ChannelHandler}s in a pipeline
  * interact with each other.
  *
- * 一个handles的列表
+ * 一个通道 输入输出的处理器的列表
  *
  * <h3>Creation of a pipeline</h3>
  *
  * Each channel has its own pipeline and it is created automatically when a new channel is created.
+ * 每一个通道再闯将的时候都会创建属于自己的pipeline
+ *
  *
  * <h3>How an event flows in a pipeline</h3>
+ * 在pipeline重事件如何传递
  *
  * The following diagram describes how I/O events are processed by {@link ChannelHandler}s in a {@link ChannelPipeline}
  * typically. An I/O event is handled by either a {@link ChannelInboundHandler} or a {@link ChannelOutboundHandler}
  * and be forwarded to its closest handler by calling the event propagation methods defined in
  * {@link ChannelHandlerContext}, such as {@link ChannelHandlerContext#fireChannelRead(Object)} and
  * {@link ChannelHandlerContext#write(Object)}.
+ *
+ * 下图描述了IO事件是如何在ChannelPipeline中被通道处理器(ChannelHandler)处理的.
+ *
+ * 一个I/O事件被一个通道入站处理器(ChannelInboundHandler)或者一个通道出战处理器(ChannelOutboundHandler)处理的
+ *
  *
  * <pre>
  *                                                 I/O Request
@@ -95,6 +103,7 @@ import java.util.NoSuchElementException;
  * diagram.  The inbound data is often read from a remote peer via the actual input operation such as
  * {@link SocketChannel#read(ByteBuffer)}.  If an inbound event goes beyond the top inbound handler, it is discarded
  * silently, or logged if it needs your attention.
+ *
  * <p>
  * An outbound event is handled by the outbound handler in the top-down direction as shown on the right side of the
  * diagram.  An outbound handler usually generates or transforms the outbound traffic such as write requests.
@@ -234,6 +243,8 @@ public interface ChannelPipeline
      *         if there's an entry with the same name already in the pipeline
      * @throws NullPointerException
      *         if the specified handler is {@code null}
+     *
+     *         向此pipeline头部添加一个通道处理器
      */
     ChannelPipeline addFirst(String name, ChannelHandler handler);
 
@@ -249,6 +260,7 @@ public interface ChannelPipeline
      *         if there's an entry with the same name already in the pipeline
      * @throws NullPointerException
      *         if the specified handler is {@code null}
+     *
      */
     ChannelPipeline addFirst(EventExecutorGroup group, String name, ChannelHandler handler);
 
