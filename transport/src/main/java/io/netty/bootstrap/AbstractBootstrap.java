@@ -61,6 +61,8 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     //事件循环组
     //主事件循环组 -- 线程池
     volatile EventLoopGroup group;
+
+    //通道创建工厂
     @SuppressWarnings("deprecation")
     private volatile ChannelFactory<? extends C> channelFactory;
     private volatile SocketAddress localAddress;
@@ -312,10 +314,17 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         }
     }
 
+    /**
+     * 初始化和注册
+     * @return
+     */
     final ChannelFuture initAndRegister() {
+        //channel
         Channel channel = null;
         try {
+            //通过工厂获取新通道
             channel = channelFactory.newChannel();
+            //初始化新通道
             init(channel);
         } catch (Throwable t) {
             if (channel != null) {
@@ -349,6 +358,11 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         return regFuture;
     }
 
+    /**
+     * 进行通道初始化
+     * @param channel
+     * @throws Exception
+     */
     abstract void init(Channel channel) throws Exception;
 
     private static void doBind0(

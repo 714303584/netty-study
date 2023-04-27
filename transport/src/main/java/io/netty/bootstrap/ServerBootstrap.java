@@ -147,7 +147,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
     }
 
     /**
-     * 初始化通道
+     * ServerBootstrap初始化通道
      * @param channel  channel通道 io.netty.channel.Channel
      *                 //TODO 这个通道
      */

@@ -19,6 +19,7 @@ import io.netty.channel.Channel;
 
 /**
  * @deprecated Use {@link io.netty.channel.ChannelFactory} instead.
+ * 已经废弃的通道创建工厂
  */
 @Deprecated
 public interface ChannelFactory<T extends Channel> {

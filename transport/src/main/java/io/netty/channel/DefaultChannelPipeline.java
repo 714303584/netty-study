@@ -89,6 +89,11 @@ public class DefaultChannelPipeline implements ChannelPipeline {
      */
     private boolean registered;
 
+    /**
+     * 默认的通道处理管道
+     * //进行通道处理
+     * @param channel
+     */
     protected DefaultChannelPipeline(Channel channel) {
         this.channel = ObjectUtil.checkNotNull(channel, "channel");
         succeededFuture = new SucceededChannelFuture(channel, null);
@@ -1245,6 +1250,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
+    //特殊的处理器 -- 尾部上下文
     // A special catch-all handler that handles both bytes and messages.
     final class TailContext extends AbstractChannelHandlerContext implements ChannelInboundHandler {
 
@@ -1306,6 +1312,12 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
+    /**
+     * 头部上下文
+     * //todo
+     * ChannelOutboundHandler 出栈处理器
+     * ChannelInboundHandler 入栈处理器
+     */
     final class HeadContext extends AbstractChannelHandlerContext
             implements ChannelOutboundHandler, ChannelInboundHandler {
 
@@ -1361,11 +1373,21 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             unsafe.deregister(promise);
         }
 
+        /**
+         * 进行read
+         * @param ctx
+         */
         @Override
         public void read(ChannelHandlerContext ctx) {
             unsafe.beginRead();
         }
 
+        /**
+         * 运行写入
+         * @param ctx               the {@link ChannelHandlerContext} for which the write operation is made
+         * @param msg               the message to write
+         * @param promise           the {@link ChannelPromise} to notify once the operation completes
+         */
         @Override
         public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
             unsafe.write(msg, promise);
