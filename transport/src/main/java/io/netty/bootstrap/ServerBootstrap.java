@@ -153,7 +153,9 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
      */
     @Override
     void init(Channel channel) {
+        //设置通道的options
         setChannelOptions(channel, newOptionsArray(), logger);
+        //设置通道的属性
         setAttributes(channel, newAttributesArray());
 
 
@@ -166,6 +168,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         final Entry<AttributeKey<?>, Object>[] currentChildAttrs = newAttributesArray(childAttrs);
 
         //初始化channel
+        //初始化处理管道
         p.addLast(new ChannelInitializer<Channel>() {
             /**
              * 初始化ChannelPipeline
@@ -176,11 +179,13 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
             public void initChannel(final Channel ch) {
 
                 final ChannelPipeline pipeline = ch.pipeline();
+                //获取配置的处理管道
                 ChannelHandler handler = config.handler();
                 if (handler != null) {
                     pipeline.addLast(handler);
                 }
-
+                //执行事件
+                //获取管道的自身事件进行执行
                 ch.eventLoop().execute(new Runnable() {
                     @Override
                     public void run() {
