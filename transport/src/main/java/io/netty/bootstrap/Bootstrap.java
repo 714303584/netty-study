@@ -40,6 +40,8 @@ import java.net.SocketAddress;
  * A {@link Bootstrap} that makes it easy to bootstrap a {@link Channel} to use
  * for clients.
  *
+ * 客户端的bootstrap
+ *
  * <p>The {@link #bind()} methods are useful in combination with connectionless transports such as datagram (UDP).
  * For regular TCP connections, please use the provided {@link #connect()} methods.</p>
  */
