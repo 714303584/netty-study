@@ -1133,10 +1133,18 @@ public abstract class AbstractByteBuf extends ByteBuf {
         return writtenBytes;
     }
 
+    /**
+     * 从通道中读取数据
+     * @param in
+     * @param length the maximum number of bytes to transfer
+     *
+     * @return
+     * @throws IOException
+     */
     @Override
     public int writeBytes(ScatteringByteChannel in, int length) throws IOException {
-        logger.info("writeBytes 写入buf");
         ensureWritable(length);
+        //
         int writtenBytes = setBytes(writerIndex, in, length);
         if (writtenBytes > 0) {
             writerIndex += writtenBytes;

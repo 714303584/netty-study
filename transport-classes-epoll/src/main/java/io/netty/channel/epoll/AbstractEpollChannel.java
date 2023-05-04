@@ -56,6 +56,9 @@ import static io.netty.channel.internal.ChannelUtils.WRITE_STATUS_SNDBUF_FULL;
 import static io.netty.channel.unix.UnixChannelUtil.computeRemoteAddr;
 import static io.netty.util.internal.ObjectUtil.checkNotNull;
 
+/**
+ * Epoll 模式的通道
+ */
 abstract class AbstractEpollChannel extends AbstractChannel implements UnixChannel {
     private static final ChannelMetadata METADATA = new ChannelMetadata(false);
     final LinuxSocket socket;
@@ -146,6 +149,10 @@ abstract class AbstractEpollChannel extends AbstractChannel implements UnixChann
         return METADATA;
     }
 
+    /**
+     * 进行关闭
+     * @throws Exception
+     */
     @Override
     protected void doClose() throws Exception {
         active = false;
@@ -217,9 +224,14 @@ abstract class AbstractEpollChannel extends AbstractChannel implements UnixChann
         ((EpollEventLoop) eventLoop()).remove(this);
     }
 
+    /**
+     * 进行消息读取
+     * @throws Exception
+     */
     @Override
     protected final void doBeginRead() throws Exception {
         // Channel.read() or ChannelHandlerContext.read() was called
+        //通道的读取
         final AbstractEpollUnsafe unsafe = (AbstractEpollUnsafe) unsafe();
         unsafe.readPending = true;
 
@@ -414,6 +426,9 @@ abstract class AbstractEpollChannel extends AbstractChannel implements UnixChann
                 remoteAddress.getAddress(), remoteAddress.getPort(), fastOpen);
     }
 
+    /**
+     * 虚拟的epoll
+     */
     protected abstract class AbstractEpollUnsafe extends AbstractUnsafe {
         boolean readPending;
         boolean maybeMoreDataToRead;
@@ -435,6 +450,10 @@ abstract class AbstractEpollChannel extends AbstractChannel implements UnixChann
             maybeMoreDataToRead = false;
         }
 
+        /**
+         *
+         * @param config
+         */
         final void epollInFinally(ChannelConfig config) {
             maybeMoreDataToRead = allocHandle.maybeMoreDataToRead();
 

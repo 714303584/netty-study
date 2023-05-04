@@ -103,6 +103,8 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
 
     /**
      * unsafe进行通道中的消息读取
+     *
+     * Unsafe 进行消息处理
      */
     protected class NioByteUnsafe extends AbstractNioUnsafe {
 

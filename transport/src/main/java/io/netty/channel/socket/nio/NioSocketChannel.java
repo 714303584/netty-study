@@ -308,6 +308,11 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
         doBind0(localAddress);
     }
 
+    /**
+     * 进行绑定
+     * @param localAddress
+     * @throws Exception
+     */
     private void doBind0(SocketAddress localAddress) throws Exception {
         if (PlatformDependent.javaVersion() >= 7) {
             SocketUtils.bind(javaChannel(), localAddress);
@@ -316,6 +321,13 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
         }
     }
 
+    /**
+     * 进行连接
+     * @param remoteAddress
+     * @param localAddress
+     * @return
+     * @throws Exception
+     */
     @Override
     protected boolean doConnect(SocketAddress remoteAddress, SocketAddress localAddress) throws Exception {
         if (localAddress != null) {
@@ -356,16 +368,17 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
     }
 
     /**
-     * 做消息读取
+     * 做消息读取 进行消息读取
      * @param byteBuf
      * @return
      * @throws Exception
      */
     @Override
     protected int doReadBytes(ByteBuf byteBuf) throws Exception {
-        logger.info("doReadBytes--做消息读取，写入byteBuf中");
+        //进行消息读取
         final RecvByteBufAllocator.Handle allocHandle = unsafe().recvBufAllocHandle();
         allocHandle.attemptedBytesRead(byteBuf.writableBytes());
+        //调用buf的写入操作从channel（NIO）中获取数据
         return byteBuf.writeBytes(javaChannel(), allocHandle.attemptedBytesRead());
     }
 

@@ -223,6 +223,9 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         void forceFlush();
     }
 
+    /**
+     * 虚拟的NIO unsafe实现
+     */
     protected abstract class AbstractNioUnsafe extends AbstractUnsafe implements NioUnsafe {
 
         protected final void removeReadOp() {
@@ -240,6 +243,10 @@ public abstract class AbstractNioChannel extends AbstractChannel {
             }
         }
 
+        /**
+         * 获取java的NIO通道
+         * @return
+         */
         @Override
         public final SelectableChannel ch() {
             return javaChannel();
@@ -344,11 +351,15 @@ public abstract class AbstractNioChannel extends AbstractChannel {
             closeIfClosed();
         }
 
+        /**
+         * 完成连接
+         */
         @Override
         public final void finishConnect() {
             // Note this method is invoked by the event loop only if the connection attempt was
             // neither cancelled nor timed out.
 
+            //判断是否在EventLoop中
             assert eventLoop().inEventLoop();
 
             try {
@@ -367,6 +378,9 @@ public abstract class AbstractNioChannel extends AbstractChannel {
             }
         }
 
+        /**
+         * 刷新缓冲区
+         */
         @Override
         protected final void flush0() {
             // Flush immediately only when there's no pending flush.
@@ -377,6 +391,9 @@ public abstract class AbstractNioChannel extends AbstractChannel {
             }
         }
 
+        /**
+         * 强制刷新缓冲区
+         */
         @Override
         public final void forceFlush() {
             // directly call super.flush0() to force a flush now
@@ -457,6 +474,8 @@ public abstract class AbstractNioChannel extends AbstractChannel {
 
     /**
      * Finish the connect
+     * 完成连接
+     *
      */
     protected abstract void doFinishConnect() throws Exception;
 
@@ -464,6 +483,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
      * Returns an off-heap copy of the specified {@link ByteBuf}, and releases the original one.
      * Note that this method does not create an off-heap copy if the allocation / deallocation cost is too high,
      * but just returns the original {@link ByteBuf}..
+     * 获取直接内存buff
      */
     protected final ByteBuf newDirectBuffer(ByteBuf buf) {
         final int readableBytes = buf.readableBytes();
@@ -543,6 +563,10 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         return buf;
     }
 
+    /**
+     * 进行关闭
+     * @throws Exception
+     */
     @Override
     protected void doClose() throws Exception {
         ChannelPromise promise = connectPromise;

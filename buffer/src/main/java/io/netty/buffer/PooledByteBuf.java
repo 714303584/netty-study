@@ -153,6 +153,10 @@ abstract class PooledByteBuf<T> extends AbstractReferenceCountedByteBuf {
         return PooledSlicedByteBuf.newInstance(this, this, index, length);
     }
 
+    /**
+     * 获取消息
+     * @return
+     */
     protected final ByteBuffer internalNioBuffer() {
         ByteBuffer tmpNioBuf = this.tmpNioBuf;
         if (tmpNioBuf == null) {
@@ -182,14 +186,24 @@ abstract class PooledByteBuf<T> extends AbstractReferenceCountedByteBuf {
         recyclerHandle.recycle(this);
     }
 
+    //
     protected final int idx(int index) {
         return offset + index;
     }
 
+    /**
+     *  返回NIO的Buffer
+     * @param index
+     * @param length
+     * @param duplicate
+     * @return
+     */
     final ByteBuffer _internalNioBuffer(int index, int length, boolean duplicate) {
         index = idx(index);
+        //获取一个NIO的buffer
         ByteBuffer buffer = duplicate ? newInternalNioBuffer(memory) : internalNioBuffer();
         buffer.limit(index + length).position(index);
+        //返回NIo的Buffer
         return buffer;
     }
 
@@ -250,11 +264,21 @@ abstract class PooledByteBuf<T> extends AbstractReferenceCountedByteBuf {
         return readBytes;
     }
 
+    /**
+     * 将channel(in)中的数据写入buf
+     * @param index
+     * @param in
+     * @param length the maximum number of bytes to transfer
+     *
+     * @return
+     * @throws IOException
+     */
     @Override
     public final int setBytes(int index, ScatteringByteChannel in, int length) throws IOException {
         try {
             //将channel中的数据写入buff中
             logger.info("channel 读取(read)数据到buff");
+
             return in.read(internalNioBuffer(index, length));
         } catch (ClosedChannelException ignored) {
             return -1;

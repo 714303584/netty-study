@@ -868,7 +868,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
         }
 
         /**
-         * 进行阅读
+         * 进行消息读取
          */
         @Override
         public final void beginRead() {
