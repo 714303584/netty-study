@@ -24,6 +24,13 @@ import io.netty.util.ReferenceCountUtil;
 
 @Sharable
 public class UptimeServerHandler extends SimpleChannelInboundHandler<Object> {
+
+    String name = "";
+
+    public UptimeServerHandler(String name) {
+        this.name = name;
+    }
+
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
 
@@ -36,7 +43,9 @@ public class UptimeServerHandler extends SimpleChannelInboundHandler<Object> {
         String stringMsg = new String(unCompress, "UTF-8");
         System.out.println("message:" + msg);
         User user = JSON.toJavaObject(JSON.parseObject(stringMsg), User.class);
-        System.out.print(user.toString()+"\n");
+        System.out.print(name + "---"+user.toString()+"\n");
+
+        ctx.fireChannelRead(user);
 //        ReferenceCountUtil.release(msg);
         // discard
     }

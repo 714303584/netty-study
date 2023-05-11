@@ -37,7 +37,10 @@ import io.netty.handler.logging.LoggingHandler;
  */
 public final class UptimeServer {
     private static final int PORT = Integer.parseInt(System.getProperty("port", "8888"));
-    private static final UptimeServerHandler handler = new UptimeServerHandler();
+
+    //测试处理链(pipeline)
+    private static final UptimeServerHandler handler = new UptimeServerHandler("UptimeServerHandler1");
+    private static final UptimeServerHandler2 handler2 = new UptimeServerHandler2("UptimeServerHandler2");
 
     private UptimeServer() {
     }
@@ -62,6 +65,7 @@ public final class UptimeServer {
                             ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0,4));
 //                            ch.pipeline().addLast(new StringDecoder());
                             ch.pipeline().addLast(handler);
+                            ch.pipeline().addLast(handler2);
                         }
                     });
 
