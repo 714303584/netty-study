@@ -45,6 +45,7 @@ public class UptimeServerHandler extends SimpleChannelInboundHandler<Object> {
         User user = JSON.toJavaObject(JSON.parseObject(stringMsg), User.class);
         System.out.print(name + "---"+user.toString()+"\n");
 
+        //进行
         ctx.fireChannelRead(user);
 //        ReferenceCountUtil.release(msg);
         // discard
