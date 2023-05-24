@@ -61,7 +61,9 @@ import static io.netty.channel.ChannelHandlerMask.mask;
 abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, ResourceLeakHint {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractChannelHandlerContext.class);
+    //下一个通道处理上下文
     volatile AbstractChannelHandlerContext next;
+    //上一个通道处理上下文
     volatile AbstractChannelHandlerContext prev;
 
     private static final AtomicIntegerFieldUpdater<AbstractChannelHandlerContext> HANDLER_STATE_UPDATER =
@@ -85,6 +87,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
      */
     private static final int INIT = 0;
 
+    //默认的通道处理管道
     private final DefaultChannelPipeline pipeline;
     private final String name;
     private final boolean ordered;
@@ -92,6 +95,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
 
     // Will be set to null if no child executor should be used, otherwise it will be set to the
     // child executor.
+    //时间处理执行者
     final EventExecutor executor;
     private ChannelFuture succeededFuture;
 
@@ -371,14 +375,14 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
      */
     static void invokeChannelRead(final AbstractChannelHandlerContext next, Object msg) {
         logger.info("invokeChannelRead 处理："+msg.getClass()+" next:"+next.getClass().getCanonicalName());
-        //进行读取
+        //将消息传递给下一个处理程序 -- 内部处理仅仅是简单判断
         final Object m = next.pipeline.touch(ObjectUtil.checkNotNull(msg, "msg"), next);
         //获取事件执行者 -- 进行
         EventExecutor executor = next.executor();
         //判断是否再事件循环中
         if (executor.inEventLoop()) {
             logger.info("executor.inEventLoop() --> next.invokeChannelRead(m);");
-
+            //消息处理
             next.invokeChannelRead(m);
         } else {
 
@@ -402,11 +406,11 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         //执行读取功能
         logger.info("invokeChannelRead class:"+this.getClass().getName()+"处理:"+msg.getClass());
         if (invokeHandler()) {
-            try {
+            try { //进行消息处理
                 logger.info("handler:"+((ChannelInboundHandler) handler()).getClass().getName());
                 //进行读取
                 //调用handler功能进行读取 通常调用 ChannelInboundHandlerAdapter的子类进行消息的读取
-                ((ChannelInboundHandler) handler()).channelRead(this, msg);
+                ((ChannelInboundHandler) handler()).channelRead(this, msg); //调用处理程序进行消息处理ChannelInboundHandler的消息的channelRead方法
             } catch (Throwable t) {
                 invokeExceptionCaught(t);
             }

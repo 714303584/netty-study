@@ -42,6 +42,8 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 /**
  * The default {@link ChannelPipeline} implementation.  It is usually created
  * by a {@link Channel} implementation when the {@link Channel} is created.
+ *
+ * 默认的通道处理管道
  */
 public class DefaultChannelPipeline implements ChannelPipeline {
 
@@ -64,7 +66,9 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     final AbstractChannelHandlerContext head;
     final AbstractChannelHandlerContext tail;
 
+    //管道处理的通道
     private final Channel channel;
+
     private final ChannelFuture succeededFuture;
     private final VoidChannelPromise voidPromise;
     private final boolean touch = ResourceLeakDetector.isEnabled();
@@ -117,6 +121,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         return handle;
     }
 
+    //touch
     final Object touch(Object msg, AbstractChannelHandlerContext next) {
         return touch ? ReferenceCountUtil.touch(msg, next) : msg;
     }
