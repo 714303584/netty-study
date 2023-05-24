@@ -73,7 +73,7 @@ public final class UptimeClient {
         int i = 0;
         Thread.sleep(1000);
 
-        while (true) {
+//        while (true) {
 
 
             User user = new User();
@@ -101,11 +101,11 @@ public final class UptimeClient {
                             .writeBytes(comBytes)
             );
             //Thread.sleep(110);
-            i++;
-            if( i >1 ){
-                return;
-            }
-        }
+//            i++;
+//            if( i >1 ){
+//                return;
+//            }
+//        }
 //        channelFuture.channel().flush();
 
     }

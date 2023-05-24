@@ -163,7 +163,7 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
     }
 
     /**
-     * 进行消息读取
+     *  处理Nio的消息进行消息读取
      * @param buf
      * @return
      * @throws Exception

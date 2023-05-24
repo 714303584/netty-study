@@ -259,7 +259,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
 
             logger.info("ServerBootstrap 调用通道读取 channelRead");
-            //消息为通道
+            //消息为通道 NioSocketChannel 创建通道
             final Channel child = (Channel) msg;
 
             child.pipeline().addLast(childHandler);

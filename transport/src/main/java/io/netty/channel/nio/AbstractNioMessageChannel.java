@@ -86,6 +86,7 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
             try {
                 try {
                     do {
+                        //进行消磁处理
                         int localRead = doReadMessages(readBuf);
                         if (localRead == 0) {
                             break;
@@ -209,6 +210,7 @@ public abstract class AbstractNioMessageChannel extends AbstractNioChannel {
 
     /**
      * Read messages into the given array and return the amount which was read.
+     * 调用子方法进行消息处理
      */
     protected abstract int doReadMessages(List<Object> buf) throws Exception;
 
