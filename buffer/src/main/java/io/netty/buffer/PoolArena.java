@@ -281,9 +281,13 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         }
 
         // Add a new chunk.
+        //申请失败  创建一个新的内存块(Chunk)
         PoolChunk<T> c = newChunk(pageSize, nPSizes, pageShifts, chunkSize);
+        //进行内存申请
         boolean success = c.allocate(buf, reqCapacity, sizeIdx, threadCache);
+        //申请成功
         assert success;
+        //将新建内存块放入到init链表中
         qInit.add(c);
     }
 
