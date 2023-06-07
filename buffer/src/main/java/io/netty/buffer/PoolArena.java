@@ -46,9 +46,15 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
 
     /**
      * 内存分片的大小 todo ？？
+     *
+     * 内存规格提示：
+     *             普遍教程中都有Tiny规格 -- 实际在某一版本已经删除
      */
     enum SizeClass {
+        //移除了Tiny内存规格
+        //小内存
         Small,
+        //中等内存
         Normal
     }
 
@@ -60,10 +66,10 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
     private final PoolSubpage<T>[] smallSubpagePools;
 
     //内存块列表 根据使用率来进行分租
-    private final PoolChunkList<T> q050;
-    private final PoolChunkList<T> q025;
-    private final PoolChunkList<T> q000;
     private final PoolChunkList<T> qInit;
+    private final PoolChunkList<T> q000;
+    private final PoolChunkList<T> q025;
+    private final PoolChunkList<T> q050;
     private final PoolChunkList<T> q075;
     private final PoolChunkList<T> q100;
 
