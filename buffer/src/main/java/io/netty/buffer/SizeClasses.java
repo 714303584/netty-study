@@ -141,6 +141,7 @@ abstract class SizeClasses implements SizeClassesMetric {
     // spacing is 1 << LOG2_QUANTUM, so the size of array is lookupMaxclass >> LOG2_QUANTUM
     private final int[] size2idxTab;
 
+    //获取nSize的值
     private int sizeClasses() {
         int normalMaxSize = -1;
 
@@ -309,11 +310,13 @@ abstract class SizeClasses implements SizeClassesMetric {
     @Override
     public int size2SizeIdx(int size) {
         if (size == 0) {
+            //返回0
             return 0;
         }
 
         //大小大于chunkSize
         if (size > chunkSize) {
+            //？？ 返回nSize
             return nSizes;
         }
 

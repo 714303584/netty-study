@@ -58,7 +58,7 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         Normal
     }
 
-    //内存池申请器
+    //池内存申请器
     final PooledByteBufAllocator parent;
 
     final int numSmallSubpagePools;
@@ -107,6 +107,8 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         }
 
         //初始化数据分片
+        //初始化内存池块
+        //倒叙初始化 --
         q100 = new PoolChunkList<T>(this, null, 100, Integer.MAX_VALUE, chunkSize);
         q075 = new PoolChunkList<T>(this, q100, 75, 100, chunkSize);
         q050 = new PoolChunkList<T>(this, q075, 50, 100, chunkSize);
@@ -123,6 +125,8 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         //进行链表关联 使用25的上一个是50%
         q025.prevList(q000);
         q000.prevList(null);
+
+        //？？？
         qInit.prevList(qInit);
 
         List<PoolChunkListMetric> metrics = new ArrayList<PoolChunkListMetric>(6);
@@ -185,54 +189,89 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         }
     }
 
+    /**
+     *     //线程对内存进行缓存
+     * @param cache
+     * @param buf
+     * @param reqCapacity
+     * @param sizeIdx
+     */
+
     private void tcacheAllocateSmall(PoolThreadCache cache, PooledByteBuf<T> buf, final int reqCapacity,
                                      final int sizeIdx) {
 
+        //从cache中申请一个小缓存
         if (cache.allocateSmall(this, buf, reqCapacity, sizeIdx)) {
+            //能够在缓存中申请到内存 -- 直接返回
             // was able to allocate out of the cache so move on
             return;
         }
 
         /*
+         * 锁定缓存头
          * Synchronize on the head. This is needed as {@link PoolChunk#allocateSubpage(int)} and
          * {@link PoolChunk#free(long)} may modify the doubly linked list as well.
          */
         final PoolSubpage<T> head = smallSubpagePools[sizeIdx];
         final boolean needsNormalAllocation;
+        //锁定缓存头部
         synchronized (head) {
             final PoolSubpage<T> s = head.next;
             needsNormalAllocation = s == head;
             if (!needsNormalAllocation) {
                 assert s.doNotDestroy && s.elemSize == sizeIdx2size(sizeIdx);
+                //从PoolSubpage中申请缓存并返回位图索引
                 long handle = s.allocate();
                 assert handle >= 0;
+                //通过位图索引进行Buf的初始化
                 s.chunk.initBufWithSubpage(buf, null, handle, reqCapacity, cache);
             }
         }
 
+        //是否需要申请中等内存 -- 需要的话进行中级内存申请
         if (needsNormalAllocation) {
             synchronized (this) {
+                //申请中等内存
                 allocateNormal(buf, reqCapacity, sizeIdx, cache);
             }
         }
-
+        //记录
         incSmallAllocation();
     }
 
+    /**
+     * 申请中等内存
+     * @param cache
+     * @param buf
+     * @param reqCapacity
+     * @param sizeIdx
+     */
     private void tcacheAllocateNormal(PoolThreadCache cache, PooledByteBuf<T> buf, final int reqCapacity,
                                       final int sizeIdx) {
+        //从缓存中申请内存
         if (cache.allocateNormal(this, buf, reqCapacity, sizeIdx)) {
+            //从缓存中申请到内存
             // was able to allocate out of the cache so move on
             return;
         }
         synchronized (this) {
+            //进行中等内存申请
             allocateNormal(buf, reqCapacity, sizeIdx, cache);
             ++allocationsNormal;
         }
     }
 
-    // Method must be called inside synchronized(this) { ... } block
+    /**
+     * 中等内存的申请
+     * @param buf
+     * @param reqCapacity
+     * @param sizeIdx
+     * @param threadCache
+     *      此方法内部的实现必须要使用synchronized关键字来进行修饰
+     *     // Method must be called inside synchronized(this) { ... } block
+     */
     private void allocateNormal(PooledByteBuf<T> buf, int reqCapacity, int sizeIdx, PoolThreadCache threadCache) {
+        //不同的占用率的chunk进行申请  -- 使用poolChunkList进行内存的申请
         if (q050.allocate(buf, reqCapacity, sizeIdx, threadCache) ||
             q025.allocate(buf, reqCapacity, sizeIdx, threadCache) ||
             q000.allocate(buf, reqCapacity, sizeIdx, threadCache) ||
@@ -276,7 +315,13 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         }
     }
 
+    /**
+     * 获取指定值的SizeClass
+     * @param handle
+     * @return
+     */
     private static SizeClass sizeClass(long handle) {
+        //向右位移32位 --
         return isSubpage(handle) ? SizeClass.Small : SizeClass.Normal;
     }
 

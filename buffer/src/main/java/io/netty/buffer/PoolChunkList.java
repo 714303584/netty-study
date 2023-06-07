@@ -34,17 +34,27 @@ final class PoolChunkList<T> implements PoolChunkListMetric {
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(PoolChunkList.class);
 
     private static final Iterator<PoolChunkMetric> EMPTY_METRICS = Collections.<PoolChunkMetric>emptyList().iterator();
+
+    //此PoolChunkList所在的场地
     private final PoolArena<T> arena;
+    //下一个PoolChunkList 指的是下一个使用率
+    // 比如 75%的下一个是100%
     private final PoolChunkList<T> nextList;
+    //最小使用率
     private final int minUsage;
+    //最大使用率
     private final int maxUsage;
+    //最大容量
     private final int maxCapacity;
     //PoolChunk/
+    //内存池中的块
     private PoolChunk<T> head;
+
     private final int freeMinThreshold;
     private final int freeMaxThreshold;
 
     // This is only update once when create the linked like list of PoolChunkList in PoolArena constructor.
+    //上一个List 比如 0%的是25% 25%的是50%
     private PoolChunkList<T> prevList;
 
     // TODO: Test if adding padding helps under contention
@@ -109,8 +119,17 @@ final class PoolChunkList<T> implements PoolChunkListMetric {
         this.prevList = prevList;
     }
 
+    /**
+     * 进行内存分配
+     * @param buf
+     * @param reqCapacity 请求容量
+     * @param sizeIdx
+     * @param threadCache
+     * @return
+     */
     boolean allocate(PooledByteBuf<T> buf, int reqCapacity, int sizeIdx, PoolThreadCache threadCache) {
         int normCapacity = arena.sizeIdx2size(sizeIdx);
+        //
         if (normCapacity > maxCapacity) {
             // Either this PoolChunkList is empty or the requested capacity is larger then the capacity which can
             // be handled by the PoolChunks that are contained in this PoolChunkList.
