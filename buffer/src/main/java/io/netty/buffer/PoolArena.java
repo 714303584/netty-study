@@ -717,11 +717,22 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
             return true;
         }
 
+
+        /**
+         * 直接内存块的创建(PoolChunk)
+         * @param pageSize
+         * @param maxPageIdx
+         * @param pageShifts
+         * @param chunkSize
+         * @return
+         */
         @Override
         protected PoolChunk<ByteBuffer> newChunk(int pageSize, int maxPageIdx,
             int pageShifts, int chunkSize) {
+            //申请内存空间
             logger.info("DirectArena.newChunk 申请内存空间");
             if (directMemoryCacheAlignment == 0) {
+                //申请内存空间
                 ByteBuffer memory = allocateDirect(chunkSize);
                 return new PoolChunk<ByteBuffer>(this, memory, memory, pageSize, pageShifts,
                         chunkSize, maxPageIdx);
@@ -746,8 +757,14 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         }
 
 
+        /**
+         * //直接内存申请
+         * @param capacity
+         * @return
+         */
         private static ByteBuffer allocateDirect(int capacity) {
             logger.info("DirectArena.allocateDirect 申请内存空间(ByteBuffer)");
+            //调用java.nio 进行直接内存申请
             return PlatformDependent.useDirectBufferNoCleaner() ?
                     PlatformDependent.allocateDirectNoCleaner(capacity) : ByteBuffer.allocateDirect(capacity);
         }
