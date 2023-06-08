@@ -18,6 +18,11 @@ package io.netty.buffer;
 import static io.netty.buffer.PoolThreadCache.*;
 
 /**
+ *
+ *
+ * SizeClasses(内存分片大小) TODO 重点学习  搞懂
+ *
+ *
  * SizeClasses requires {@code pageShifts} to be defined prior to inclusion,
  * and it in turn defines:
  * <p>
