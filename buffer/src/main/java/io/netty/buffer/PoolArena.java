@@ -155,6 +155,13 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
 
     abstract boolean isDirect();
 
+    /**
+     * 分配内存  -- 进行内存分配以及封装为PooledByteBuf(池中的字符缓存)
+     * @param cache
+     * @param reqCapacity
+     * @param maxCapacity
+     * @return
+     */
     PooledByteBuf<T> allocate(PoolThreadCache cache, int reqCapacity, int maxCapacity) {
         PooledByteBuf<T> buf = newByteBuf(maxCapacity);
         allocate(cache, buf, reqCapacity);
@@ -295,6 +302,11 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         allocationsSmall.increment();
     }
 
+    /**
+     * 分配一个大内存块
+     * @param buf
+     * @param reqCapacity
+     */
     private void allocateHuge(PooledByteBuf<T> buf, int reqCapacity) {
         PoolChunk<T> chunk = newUnpooledChunk(reqCapacity);
         activeBytesHuge.add(chunk.chunkSize());
@@ -359,6 +371,12 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         return smallSubpagePools[sizeIdx];
     }
 
+    /**
+     * 重新分配方法 TODO  ？？ 详细了解
+     * @param buf
+     * @param newCapacity
+     * @param freeOldMemory
+     */
     void reallocate(PooledByteBuf<T> buf, int newCapacity, boolean freeOldMemory) {
         assert newCapacity >= 0 && newCapacity <= buf.maxCapacity();
 
@@ -563,12 +581,51 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         return max(0, val);
     }
 
+    /**
+     * 创建一个新的内存块(Chunk)
+     * 在初始化的时候进行创建
+     * 在内存申请不到的时候进行创建
+     * @param pageSize
+     * @param maxPageIdx
+     * @param pageShifts
+     * @param chunkSize
+     * @return
+     */
     protected abstract PoolChunk<T> newChunk(int pageSize, int maxPageIdx, int pageShifts, int chunkSize);
+
+    /**
+     * 申请一个非池内存块
+     * @param capacity 内存的容量
+     * @return
+     */
     protected abstract PoolChunk<T> newUnpooledChunk(int capacity);
+
+    /**
+     * 根据容量创建一个新的ByteBuf
+     * @param maxCapacity 最大容量
+     * @return
+     */
     protected abstract PooledByteBuf<T> newByteBuf(int maxCapacity);
+
+    /**
+     * 进行内存复制
+     * @param src
+     * @param srcOffset
+     * @param dst
+     * @param length
+     */
     protected abstract void memoryCopy(T src, int srcOffset, PooledByteBuf<T> dst, int length);
+
+    /**
+     * 进行内存块（chunk）的销毁
+     * @param chunk 需要销毁的内存块（chunk）
+     */
     protected abstract void destroyChunk(PoolChunk<T> chunk);
 
+    /**
+     *  PollArena的toString方法
+     * @return
+     */
     @Override
     public synchronized String toString() {
         StringBuilder buf = new StringBuilder()
