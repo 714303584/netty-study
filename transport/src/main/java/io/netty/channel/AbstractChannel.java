@@ -79,6 +79,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
         this.parent = parent;
         id = newId();
         unsafe = newUnsafe();
+        //通道的处理管道
         pipeline = newChannelPipeline();
     }
 
@@ -124,6 +125,7 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
      * Returns a new {@link DefaultChannelPipeline} instance.
      */
     protected DefaultChannelPipeline newChannelPipeline() {
+        // 默认的通道处理管道
         return new DefaultChannelPipeline(this);
     }
 

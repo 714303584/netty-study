@@ -234,6 +234,10 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         return this;
     }
 
+    /**
+     * 追加到链表的最后一个
+     * @param newCtx
+     */
     private void addLast0(AbstractChannelHandlerContext newCtx) {
         logger.info("addLast添加："+newCtx.getClass()+"到链表的最后一个");
         AbstractChannelHandlerContext prev = tail.prev;
@@ -376,6 +380,11 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         return addLast(null, handler);
     }
 
+    /**
+     * 添加Handler到处理通道
+     * @param handlers  the handlers to insert last
+     * @return
+     */
     @Override
     public final ChannelPipeline addLast(ChannelHandler... handlers) {
         return addLast(null, handlers);
@@ -389,6 +398,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             if (h == null) {
                 break;
             }
+            //调用addList方法将处理器
             addLast(executor, null, h);
         }
 
@@ -925,6 +935,12 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         return this;
     }
 
+
+    /**
+     * 处理读到的消息
+     * @param msg
+     * @return
+     */
     @Override
     public final ChannelPipeline fireChannelRead(Object msg) {
         logger.info("使用channelPipeline.fireChannelRead进行消息处理");
