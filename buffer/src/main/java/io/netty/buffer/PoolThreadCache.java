@@ -42,6 +42,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Scalable memory allocation using jemalloc</a>.
  * 线程内存空间
  * 为某一线程指定内存分配的空间
+ *
+ *
+ * 线程本地缓存 - 缓存部分申请过的内存
  */
 final class PoolThreadCache {
 

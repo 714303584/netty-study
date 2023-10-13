@@ -46,13 +46,19 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
 
     /**
      * 内存分片的大小 todo ？？
+     *
+     * 内存规格提示：
+     *             普遍教程中都有Tiny规格 -- 实际在某一版本已经删除
      */
     enum SizeClass {
+        //移除了Tiny内存规格
+        //小内存
         Small,
+        //中等内存
         Normal
     }
 
-    //内存池申请器
+    //池内存申请器
     final PooledByteBufAllocator parent;
 
     final int numSmallSubpagePools;
@@ -60,10 +66,10 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
     private final PoolSubpage<T>[] smallSubpagePools;
 
     //内存块列表 根据使用率来进行分租
-    private final PoolChunkList<T> q050;
-    private final PoolChunkList<T> q025;
-    private final PoolChunkList<T> q000;
     private final PoolChunkList<T> qInit;
+    private final PoolChunkList<T> q000;
+    private final PoolChunkList<T> q025;
+    private final PoolChunkList<T> q050;
     private final PoolChunkList<T> q075;
     private final PoolChunkList<T> q100;
 
@@ -101,6 +107,8 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         }
 
         //初始化数据分片
+        //初始化内存池块
+        //倒叙初始化 --
         q100 = new PoolChunkList<T>(this, null, 100, Integer.MAX_VALUE, chunkSize);
         q075 = new PoolChunkList<T>(this, q100, 75, 100, chunkSize);
         q050 = new PoolChunkList<T>(this, q075, 50, 100, chunkSize);
@@ -117,6 +125,8 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         //进行链表关联 使用25的上一个是50%
         q025.prevList(q000);
         q000.prevList(null);
+
+        //？？？
         qInit.prevList(qInit);
 
         List<PoolChunkListMetric> metrics = new ArrayList<PoolChunkListMetric>(6);
@@ -145,6 +155,13 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
 
     abstract boolean isDirect();
 
+    /**
+     * 分配内存  -- 进行内存分配以及封装为PooledByteBuf(池中的字符缓存)
+     * @param cache
+     * @param reqCapacity
+     * @param maxCapacity
+     * @return
+     */
     PooledByteBuf<T> allocate(PoolThreadCache cache, int reqCapacity, int maxCapacity) {
         PooledByteBuf<T> buf = newByteBuf(maxCapacity);
         allocate(cache, buf, reqCapacity);
@@ -179,54 +196,89 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         }
     }
 
+    /**
+     *     //线程对内存进行缓存
+     * @param cache
+     * @param buf
+     * @param reqCapacity
+     * @param sizeIdx
+     */
+
     private void tcacheAllocateSmall(PoolThreadCache cache, PooledByteBuf<T> buf, final int reqCapacity,
                                      final int sizeIdx) {
 
+        //从cache中申请一个小缓存
         if (cache.allocateSmall(this, buf, reqCapacity, sizeIdx)) {
+            //能够在缓存中申请到内存 -- 直接返回
             // was able to allocate out of the cache so move on
             return;
         }
 
         /*
+         * 锁定缓存头
          * Synchronize on the head. This is needed as {@link PoolChunk#allocateSubpage(int)} and
          * {@link PoolChunk#free(long)} may modify the doubly linked list as well.
          */
         final PoolSubpage<T> head = smallSubpagePools[sizeIdx];
         final boolean needsNormalAllocation;
+        //锁定缓存头部
         synchronized (head) {
             final PoolSubpage<T> s = head.next;
             needsNormalAllocation = s == head;
             if (!needsNormalAllocation) {
                 assert s.doNotDestroy && s.elemSize == sizeIdx2size(sizeIdx);
+                //从PoolSubpage中申请缓存并返回位图索引
                 long handle = s.allocate();
                 assert handle >= 0;
+                //通过位图索引进行Buf的初始化
                 s.chunk.initBufWithSubpage(buf, null, handle, reqCapacity, cache);
             }
         }
 
+        //是否需要申请中等内存 -- 需要的话进行中级内存申请
         if (needsNormalAllocation) {
             synchronized (this) {
+                //申请中等内存
                 allocateNormal(buf, reqCapacity, sizeIdx, cache);
             }
         }
-
+        //记录
         incSmallAllocation();
     }
 
+    /**
+     * 申请中等内存
+     * @param cache
+     * @param buf
+     * @param reqCapacity
+     * @param sizeIdx
+     */
     private void tcacheAllocateNormal(PoolThreadCache cache, PooledByteBuf<T> buf, final int reqCapacity,
                                       final int sizeIdx) {
+        //从缓存中申请内存
         if (cache.allocateNormal(this, buf, reqCapacity, sizeIdx)) {
+            //从缓存中申请到内存
             // was able to allocate out of the cache so move on
             return;
         }
         synchronized (this) {
+            //进行中等内存申请
             allocateNormal(buf, reqCapacity, sizeIdx, cache);
             ++allocationsNormal;
         }
     }
 
-    // Method must be called inside synchronized(this) { ... } block
+    /**
+     * 中等内存的申请
+     * @param buf
+     * @param reqCapacity
+     * @param sizeIdx
+     * @param threadCache
+     *      此方法内部的实现必须要使用synchronized关键字来进行修饰
+     *     // Method must be called inside synchronized(this) { ... } block
+     */
     private void allocateNormal(PooledByteBuf<T> buf, int reqCapacity, int sizeIdx, PoolThreadCache threadCache) {
+        //不同的占用率的chunk进行申请  -- 使用poolChunkList进行内存的申请
         if (q050.allocate(buf, reqCapacity, sizeIdx, threadCache) ||
             q025.allocate(buf, reqCapacity, sizeIdx, threadCache) ||
             q000.allocate(buf, reqCapacity, sizeIdx, threadCache) ||
@@ -236,9 +288,13 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         }
 
         // Add a new chunk.
+        //申请失败  创建一个新的内存块(Chunk)
         PoolChunk<T> c = newChunk(pageSize, nPSizes, pageShifts, chunkSize);
+        //进行内存申请
         boolean success = c.allocate(buf, reqCapacity, sizeIdx, threadCache);
+        //申请成功
         assert success;
+        //将新建内存块放入到init链表中
         qInit.add(c);
     }
 
@@ -246,6 +302,11 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         allocationsSmall.increment();
     }
 
+    /**
+     * 分配一个大内存块
+     * @param buf
+     * @param reqCapacity
+     */
     private void allocateHuge(PooledByteBuf<T> buf, int reqCapacity) {
         PoolChunk<T> chunk = newUnpooledChunk(reqCapacity);
         activeBytesHuge.add(chunk.chunkSize());
@@ -270,7 +331,13 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         }
     }
 
+    /**
+     * 获取指定值的SizeClass
+     * @param handle
+     * @return
+     */
     private static SizeClass sizeClass(long handle) {
+        //向右位移32位 --
         return isSubpage(handle) ? SizeClass.Small : SizeClass.Normal;
     }
 
@@ -304,6 +371,12 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         return smallSubpagePools[sizeIdx];
     }
 
+    /**
+     * 重新分配方法 TODO  ？？ 详细了解
+     * @param buf
+     * @param newCapacity
+     * @param freeOldMemory
+     */
     void reallocate(PooledByteBuf<T> buf, int newCapacity, boolean freeOldMemory) {
         assert newCapacity >= 0 && newCapacity <= buf.maxCapacity();
 
@@ -508,12 +581,51 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         return max(0, val);
     }
 
+    /**
+     * 创建一个新的内存块(Chunk)
+     * 在初始化的时候进行创建
+     * 在内存申请不到的时候进行创建
+     * @param pageSize
+     * @param maxPageIdx
+     * @param pageShifts
+     * @param chunkSize
+     * @return
+     */
     protected abstract PoolChunk<T> newChunk(int pageSize, int maxPageIdx, int pageShifts, int chunkSize);
+
+    /**
+     * 申请一个非池内存块
+     * @param capacity 内存的容量
+     * @return
+     */
     protected abstract PoolChunk<T> newUnpooledChunk(int capacity);
+
+    /**
+     * 根据容量创建一个新的ByteBuf
+     * @param maxCapacity 最大容量
+     * @return
+     */
     protected abstract PooledByteBuf<T> newByteBuf(int maxCapacity);
+
+    /**
+     * 进行内存复制
+     * @param src
+     * @param srcOffset
+     * @param dst
+     * @param length
+     */
     protected abstract void memoryCopy(T src, int srcOffset, PooledByteBuf<T> dst, int length);
+
+    /**
+     * 进行内存块（chunk）的销毁
+     * @param chunk 需要销毁的内存块（chunk）
+     */
     protected abstract void destroyChunk(PoolChunk<T> chunk);
 
+    /**
+     *  PollArena的toString方法
+     * @return
+     */
     @Override
     public synchronized String toString() {
         StringBuilder buf = new StringBuilder()
@@ -662,11 +774,22 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
             return true;
         }
 
+
+        /**
+         * 直接内存块的创建(PoolChunk)
+         * @param pageSize
+         * @param maxPageIdx
+         * @param pageShifts
+         * @param chunkSize
+         * @return
+         */
         @Override
         protected PoolChunk<ByteBuffer> newChunk(int pageSize, int maxPageIdx,
             int pageShifts, int chunkSize) {
+            //申请内存空间
             logger.info("DirectArena.newChunk 申请内存空间");
             if (directMemoryCacheAlignment == 0) {
+                //申请内存空间
                 ByteBuffer memory = allocateDirect(chunkSize);
                 return new PoolChunk<ByteBuffer>(this, memory, memory, pageSize, pageShifts,
                         chunkSize, maxPageIdx);
@@ -691,8 +814,14 @@ abstract class PoolArena<T> extends SizeClasses implements PoolArenaMetric {
         }
 
 
+        /**
+         * //直接内存申请
+         * @param capacity
+         * @return
+         */
         private static ByteBuffer allocateDirect(int capacity) {
             logger.info("DirectArena.allocateDirect 申请内存空间(ByteBuffer)");
+            //调用java.nio 进行直接内存申请
             return PlatformDependent.useDirectBufferNoCleaner() ?
                     PlatformDependent.allocateDirectNoCleaner(capacity) : ByteBuffer.allocateDirect(capacity);
         }

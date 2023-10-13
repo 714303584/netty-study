@@ -649,6 +649,7 @@ final class PoolChunk<T> implements PoolChunkMetric {
         return !isSubpage(handle);
     }
 
+    //判断是否subPage
     static boolean isSubpage(long handle) {
         return (handle >> IS_SUBPAGE_SHIFT & 1) == 1L;
     }

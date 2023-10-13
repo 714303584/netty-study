@@ -17,11 +17,14 @@ package io.netty.buffer;
 
 /**
  * Metrics for a list of chunks.
+ *
+ *列表块的指标
  */
 public interface PoolChunkListMetric extends Iterable<PoolChunkMetric> {
 
     /**
      * Return the minimum usage of the chunk list before which chunks are promoted to the previous list.
+     * 获取
      */
     int minUsage();
 
